@@ -22,17 +22,11 @@ ExpenseTracker/
 
 ## Opening in Xcode
 
-This repo doesn't check in an `.xcodeproj` (generated files are noisy in git diffs).
-Instead it uses [XcodeGen](https://github.com/yonaskolb/XcodeGen) to generate one from `project.yml`:
+1. Clone the repo.
+2. Open `ExpenseTracker.xcodeproj` (double-click it, or `open ExpenseTracker.xcodeproj`).
+3. Pick an iOS 17+ simulator (or a device) and hit Run (⌘R).
 
-```bash
-brew install xcodegen
-cd ExpenseTracker   # repo root, where project.yml lives
-xcodegen generate
-open ExpenseTracker.xcodeproj
-```
-
-Then build & run on an iOS 17+ simulator.
+No extra tooling required — the project file is checked in directly.
 
 ## Current features
 
