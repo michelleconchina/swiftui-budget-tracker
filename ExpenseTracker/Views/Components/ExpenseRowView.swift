@@ -4,7 +4,7 @@ struct ExpenseRowView: View {
     let expense: Expense
 
     private var formattedAmount: String {
-        expense.amount.formatted(.currency(code: Locale.current.currency?.identifier ?? "USD"))
+        expense.amount.formatted(.currency(code: AppCurrency.code))
     }
 
     var body: some View {

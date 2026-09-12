@@ -24,7 +24,7 @@ struct ExpenseListView: View {
     }
 
     private var currencyCode: String {
-        Locale.current.currency?.identifier ?? "USD"
+        AppCurrency.code
     }
 
     var body: some View {
