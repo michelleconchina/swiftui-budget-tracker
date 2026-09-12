@@ -21,7 +21,7 @@
 		9A628C8330557C5000DD89F2 /* SignInView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A628C8230557C5000DD89F2 /* SignInView.swift */; };
 		9A628C8630557DB500DD89F2 /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 9A628C8530557DB500DD89F2 /* FirebaseAuth */; };
 		9A628C8830557DC300DD89F2 /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = 9A628C8730557DC300DD89F2 /* FirebaseFirestore */; };
-		9A628C903055900E00DD89F2 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 9A628C8F3055900E00DD89F2 /* GoogleService-Info.plist */; };
+		9A628C9430559ACA00DD89F2 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 9A628C9330559ACA00DD89F2 /* GoogleService-Info.plist */; };
 		BC8E0F24834676BAED77B03F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = ECF3000E5E10FC28C2B2BC04 /* Assets.xcassets */; };
 		CEA0DA4DD2F5781099A30D1F /* ExpenseRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6FC7A0456DB4A98079F6DEDF /* ExpenseRowView.swift */; };
 		F0C39003201F2FA88EA1CD39 /* Expense.swift in Sources */ = {isa = PBXBuildFile; fileRef = E753B6B7FA750DA55A529F77 /* Expense.swift */; };
@@ -50,7 +50,7 @@
 		80058B5B0A8AB0F8F6284E3A /* ExpenseTrackerApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpenseTrackerApp.swift; sourceTree = "<group>"; };
 		9A628C8030557B4400DD89F2 /* ExpenseStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpenseStore.swift; sourceTree = "<group>"; };
 		9A628C8230557C5000DD89F2 /* SignInView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignInView.swift; sourceTree = "<group>"; };
-		9A628C8F3055900E00DD89F2 /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		9A628C9330559ACA00DD89F2 /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		AC4C1FBEF21AE0DA9D0423B6 /* ExpenseTrackerTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ExpenseTrackerTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		E753B6B7FA750DA55A529F77 /* Expense.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Expense.swift; sourceTree = "<group>"; };
 		EA604A737AC579E4471D1CA9 /* ExpenseTracker.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ExpenseTracker.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -117,7 +117,7 @@
 				ECF8E4D7EEFD08EB7C9C6DD7 /* Views */,
 				ECF3000E5E10FC28C2B2BC04 /* Assets.xcassets */,
 				62946E1137BA57EA20F99F98 /* Info.plist */,
-				9A628C8F3055900E00DD89F2 /* GoogleService-Info.plist */,
+				9A628C9330559ACA00DD89F2 /* GoogleService-Info.plist */,
 			);
 			path = ExpenseTracker;
 			sourceTree = "<group>";
@@ -252,7 +252,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				BC8E0F24834676BAED77B03F /* Assets.xcassets in Resources */,
-				9A628C903055900E00DD89F2 /* GoogleService-Info.plist in Resources */,
+				9A628C9430559ACA00DD89F2 /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
