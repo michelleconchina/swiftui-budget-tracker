@@ -73,7 +73,7 @@ struct ExpenseListView: View {
             }
             .navigationTitle("Expenses")
             .toolbar {
-                ToolbarItem(placement: .topBarTrailing) {
+                ToolbarItem(placement: .bottomBar) {
                     Button {
                         isPresentingAdd = true
                     } label: {

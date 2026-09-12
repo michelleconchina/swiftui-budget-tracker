@@ -18,6 +18,12 @@ struct AddEditExpenseView: View {
     var body: some View {
         NavigationStack {
             Form {
+                if let errorMessage {
+                    Section {
+                        Text(errorMessage)
+                            .foregroundStyle(.red)
+                    }
+                }
                 Section("Details") {
                     TextField("Title", text: $formViewModel.title)
                     TextField("Amount", text: $formViewModel.amountText)
@@ -33,13 +39,6 @@ struct AddEditExpenseView: View {
 
                 Section("Note") {
                     TextField("Optional note", text: $formViewModel.note, axis: .vertical)
-                }
-
-                if let errorMessage {
-                    Section {
-                        Text(errorMessage)
-                            .foregroundStyle(.red)
-                    }
                 }
             }
             .navigationTitle(formViewModel.isEditing ? "Edit Expense" : "Add Expense")
