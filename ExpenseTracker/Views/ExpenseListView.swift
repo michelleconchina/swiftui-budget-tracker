@@ -78,9 +78,20 @@ struct ExpenseListView: View {
                                         ExpenseRowView(expense: expense)
                                     }
                                     .buttonStyle(.plain)
-                                }
-                                .onDelete { offsets in
-                                    listViewModel.delete(at: offsets, from: group.expenses)
+                                    .swipeActions(edge: .trailing) {
+                                        Button(role: .destructive) {
+                                            listViewModel.delete([expense])
+                                        } label: {
+                                            Label("Delete", systemImage: "trash")
+                                        }
+
+                                        Button {
+                                            expenseToEdit = expense
+                                        } label: {
+                                            Label("Edit", systemImage: "pencil")
+                                        }
+                                        .tint(.blue)
+                                    }
                                 }
                             } header: {
                                 HStack {
