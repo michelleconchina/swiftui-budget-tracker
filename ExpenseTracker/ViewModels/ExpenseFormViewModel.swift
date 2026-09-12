@@ -1,7 +1,7 @@
 import Foundation
 import Observation
 
-enum ExpenseFormError: LocalizedError {
+enum ExpenseFormError: LocalizedError, Equatable {
     case emptyTitle
     case invalidAmount
 
