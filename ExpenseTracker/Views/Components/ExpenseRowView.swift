@@ -13,6 +13,7 @@ struct ExpenseRowView: View {
                 .foregroundStyle(.white)
                 .frame(width: 36, height: 36)
                 .background(.tint, in: Circle())
+                .accessibilityHidden(true)
 
             VStack(alignment: .leading, spacing: 2) {
                 Text(expense.title)
@@ -28,6 +29,8 @@ struct ExpenseRowView: View {
                 .font(.body.monospacedDigit())
         }
         .padding(.vertical, 4)
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("\(expense.category.displayName), \(expense.title), \(expense.date.formatted(date: .abbreviated, time: .omitted)), \(formattedAmount)")
     }
 }
 

@@ -133,6 +133,7 @@ struct ExpenseListView: View {
                     } label: {
                         Image(systemName: selectedCategory == nil ? "line.3.horizontal.decrease.circle" : "line.3.horizontal.decrease.circle.fill")
                     }
+                    .accessibilityLabel(selectedCategory == nil ? "Filter by category" : "Filtering by \(selectedCategory!.displayName)")
                 }
                 ToolbarItem(placement: .topBarTrailing) {
                     Button {
@@ -140,6 +141,7 @@ struct ExpenseListView: View {
                     } label: {
                         Image(systemName: "plus")
                     }
+                    .accessibilityLabel("Add Expense")
                 }
             }
         }
