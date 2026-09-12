@@ -5,7 +5,16 @@ import SwiftData
 struct ExpenseTrackerApp: App {
     var body: some Scene {
         WindowGroup {
-            ExpenseListView()
+            TabView {
+                ExpenseListView()
+                    .tabItem {
+                        Label("Expenses", systemImage: "list.bullet")
+                    }
+                SummaryView()
+                    .tabItem {
+                        Label("Summary", systemImage: "chart.pie")
+                    }
+            }
         }
         .modelContainer(for: Expense.self)
     }

@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		1FCDF6F3254C5B0FD363A34E /* SummaryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 042446B52DAC7677C018601D /* SummaryView.swift */; };
 		80A81B814E45E2597EBF13A6 /* AppCurrency.swift in Sources */ = {isa = PBXBuildFile; fileRef = 542AC1896C58D05B1C6779F5 /* AppCurrency.swift */; };
 		65C3D11675399E87E8547B39 /* ExpenseFormViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 69ED18C43D13107D4CBCB821 /* ExpenseFormViewModelTests.swift */; };
 		3C69B22447B02028BF435BCB /* ExpenseListViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D319DE0FC65E23C7B64EAF8 /* ExpenseListViewModelTests.swift */; };
@@ -34,6 +35,7 @@
 		EA604A737AC579E4471D1CA9 /* ExpenseTracker.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ExpenseTracker.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		ECF3000E5E10FC28C2B2BC04 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		542AC1896C58D05B1C6779F5 /* AppCurrency.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppCurrency.swift; sourceTree = "<group>"; };
+		042446B52DAC7677C018601D /* SummaryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SummaryView.swift; sourceTree = "<group>"; };
 		69ED18C43D13107D4CBCB821 /* ExpenseFormViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpenseFormViewModelTests.swift; sourceTree = "<group>"; };
 		6D319DE0FC65E23C7B64EAF8 /* ExpenseListViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpenseListViewModelTests.swift; sourceTree = "<group>"; };
 		AC4C1FBEF21AE0DA9D0423B6 /* ExpenseTrackerTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ExpenseTrackerTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -129,6 +131,7 @@
 			children = (
 				69D77C45D5B8A20F7A904014 /* ExpenseListView.swift */,
 				42DCC586C32ED9F4E56EB12B /* AddEditExpenseView.swift */,
+				042446B52DAC7677C018601D /* SummaryView.swift */,
 				90FDA4ADDA11490494B07F01 /* Components */,
 			);
 			path = Views;
@@ -259,6 +262,7 @@
 				A7831E2E66085172D5220542 /* ExpenseListViewModel.swift in Sources */,
 				323201C27212EDAF7494490E /* ExpenseListView.swift in Sources */,
 				7818352EA238C65E8C4533D3 /* AddEditExpenseView.swift in Sources */,
+				1FCDF6F3254C5B0FD363A34E /* SummaryView.swift in Sources */,
 				CEA0DA4DD2F5781099A30D1F /* ExpenseRowView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
