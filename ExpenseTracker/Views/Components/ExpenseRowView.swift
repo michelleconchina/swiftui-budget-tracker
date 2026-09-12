@@ -18,6 +18,8 @@ struct ExpenseRowView: View {
             VStack(alignment: .leading, spacing: 2) {
                 Text(expense.title)
                     .font(.body)
+                    .lineLimit(1)
+                    .truncationMode(.tail)
                 Text(expense.date, format: .dateTime.day().month().year())
                     .font(.caption)
                     .foregroundStyle(.secondary)
@@ -27,6 +29,9 @@ struct ExpenseRowView: View {
 
             Text(formattedAmount)
                 .font(.body.monospacedDigit())
+                .lineLimit(1)
+                .minimumScaleFactor(0.7)
+                .layoutPriority(1)
         }
         .padding(.vertical, 4)
         .accessibilityElement(children: .combine)
