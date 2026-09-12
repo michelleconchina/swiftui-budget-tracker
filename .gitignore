@@ -3,3 +3,4 @@
 DerivedData/
 xcuserdata/
 .swiftpm/
+ExpenseTracker/GoogleService-Info.plist
