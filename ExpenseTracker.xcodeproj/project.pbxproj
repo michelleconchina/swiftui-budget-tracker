@@ -7,28 +7,28 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		758E741CE494446DDFADDB1E /* ExpenseTrackerApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80058B5B0A8AB0F8F6284E3A /* ExpenseTrackerApp.swift */; };
-		F0C39003201F2FA88EA1CD39 /* Expense.swift in Sources */ = {isa = PBXBuildFile; fileRef = E753B6B7FA750DA55A529F77 /* Expense.swift */; };
+		323201C27212EDAF7494490E /* ExpenseListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 69D77C45D5B8A20F7A904014 /* ExpenseListView.swift */; };
 		498DBF4EE12BDA7919BC80B1 /* ExpenseCategory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0269BB0822C64C792418904A /* ExpenseCategory.swift */; };
 		691F8D57A509DA1AF151C9F7 /* ExpenseFormViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 369EAE81A355C3A05904AEC9 /* ExpenseFormViewModel.swift */; };
-		A7831E2E66085172D5220542 /* ExpenseListViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F5BFA255AF1EDA47FA8091F /* ExpenseListViewModel.swift */; };
-		323201C27212EDAF7494490E /* ExpenseListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 69D77C45D5B8A20F7A904014 /* ExpenseListView.swift */; };
+		758E741CE494446DDFADDB1E /* ExpenseTrackerApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80058B5B0A8AB0F8F6284E3A /* ExpenseTrackerApp.swift */; };
 		7818352EA238C65E8C4533D3 /* AddEditExpenseView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42DCC586C32ED9F4E56EB12B /* AddEditExpenseView.swift */; };
-		CEA0DA4DD2F5781099A30D1F /* ExpenseRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6FC7A0456DB4A98079F6DEDF /* ExpenseRowView.swift */; };
+		A7831E2E66085172D5220542 /* ExpenseListViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F5BFA255AF1EDA47FA8091F /* ExpenseListViewModel.swift */; };
 		BC8E0F24834676BAED77B03F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = ECF3000E5E10FC28C2B2BC04 /* Assets.xcassets */; };
+		CEA0DA4DD2F5781099A30D1F /* ExpenseRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6FC7A0456DB4A98079F6DEDF /* ExpenseRowView.swift */; };
+		F0C39003201F2FA88EA1CD39 /* Expense.swift in Sources */ = {isa = PBXBuildFile; fileRef = E753B6B7FA750DA55A529F77 /* Expense.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		EA604A737AC579E4471D1CA9 /* ExpenseTracker.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ExpenseTracker.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		0269BB0822C64C792418904A /* ExpenseCategory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpenseCategory.swift; sourceTree = "<group>"; };
+		0F5BFA255AF1EDA47FA8091F /* ExpenseListViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpenseListViewModel.swift; sourceTree = "<group>"; };
+		369EAE81A355C3A05904AEC9 /* ExpenseFormViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpenseFormViewModel.swift; sourceTree = "<group>"; };
+		42DCC586C32ED9F4E56EB12B /* AddEditExpenseView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddEditExpenseView.swift; sourceTree = "<group>"; };
+		62946E1137BA57EA20F99F98 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		69D77C45D5B8A20F7A904014 /* ExpenseListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpenseListView.swift; sourceTree = "<group>"; };
+		6FC7A0456DB4A98079F6DEDF /* ExpenseRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpenseRowView.swift; sourceTree = "<group>"; };
 		80058B5B0A8AB0F8F6284E3A /* ExpenseTrackerApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpenseTrackerApp.swift; sourceTree = "<group>"; };
 		E753B6B7FA750DA55A529F77 /* Expense.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Expense.swift; sourceTree = "<group>"; };
-		0269BB0822C64C792418904A /* ExpenseCategory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpenseCategory.swift; sourceTree = "<group>"; };
-		369EAE81A355C3A05904AEC9 /* ExpenseFormViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpenseFormViewModel.swift; sourceTree = "<group>"; };
-		0F5BFA255AF1EDA47FA8091F /* ExpenseListViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpenseListViewModel.swift; sourceTree = "<group>"; };
-		69D77C45D5B8A20F7A904014 /* ExpenseListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpenseListView.swift; sourceTree = "<group>"; };
-		42DCC586C32ED9F4E56EB12B /* AddEditExpenseView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddEditExpenseView.swift; sourceTree = "<group>"; };
-		6FC7A0456DB4A98079F6DEDF /* ExpenseRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpenseRowView.swift; sourceTree = "<group>"; };
-		62946E1137BA57EA20F99F98 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		EA604A737AC579E4471D1CA9 /* ExpenseTracker.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ExpenseTracker.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		ECF3000E5E10FC28C2B2BC04 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -43,20 +43,30 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		08E1A64E228BDCB11331F1D0 /* ViewModels */ = {
+			isa = PBXGroup;
+			children = (
+				369EAE81A355C3A05904AEC9 /* ExpenseFormViewModel.swift */,
+				0F5BFA255AF1EDA47FA8091F /* ExpenseListViewModel.swift */,
+			);
+			path = ViewModels;
+			sourceTree = "<group>";
+		};
+		459CCD3162D05A2BE862188A /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				E753B6B7FA750DA55A529F77 /* Expense.swift */,
+				0269BB0822C64C792418904A /* ExpenseCategory.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
 		4C5F8FEB5B1305E2D14666D4 = {
 			isa = PBXGroup;
 			children = (
 				52F3AAD0FC6C59C1988E3CCE /* ExpenseTracker */,
 				56E8DF3B9A922EF329BE93E9 /* Products */,
 			);
-			sourceTree = "<group>";
-		};
-		56E8DF3B9A922EF329BE93E9 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				EA604A737AC579E4471D1CA9 /* ExpenseTracker.app */,
-			);
-			name = Products;
 			sourceTree = "<group>";
 		};
 		52F3AAD0FC6C59C1988E3CCE /* ExpenseTracker */ = {
@@ -72,22 +82,20 @@
 			path = ExpenseTracker;
 			sourceTree = "<group>";
 		};
-		459CCD3162D05A2BE862188A /* Models */ = {
+		56E8DF3B9A922EF329BE93E9 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				E753B6B7FA750DA55A529F77 /* Expense.swift */,
-				0269BB0822C64C792418904A /* ExpenseCategory.swift */,
+				EA604A737AC579E4471D1CA9 /* ExpenseTracker.app */,
 			);
-			path = Models;
+			name = Products;
 			sourceTree = "<group>";
 		};
-		08E1A64E228BDCB11331F1D0 /* ViewModels */ = {
+		90FDA4ADDA11490494B07F01 /* Components */ = {
 			isa = PBXGroup;
 			children = (
-				369EAE81A355C3A05904AEC9 /* ExpenseFormViewModel.swift */,
-				0F5BFA255AF1EDA47FA8091F /* ExpenseListViewModel.swift */,
+				6FC7A0456DB4A98079F6DEDF /* ExpenseRowView.swift */,
 			);
-			path = ViewModels;
+			path = Components;
 			sourceTree = "<group>";
 		};
 		ECF8E4D7EEFD08EB7C9C6DD7 /* Views */ = {
@@ -98,14 +106,6 @@
 				90FDA4ADDA11490494B07F01 /* Components */,
 			);
 			path = Views;
-			sourceTree = "<group>";
-		};
-		90FDA4ADDA11490494B07F01 /* Components */ = {
-			isa = PBXGroup;
-			children = (
-				6FC7A0456DB4A98079F6DEDF /* ExpenseRowView.swift */,
-			);
-			path = Components;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -191,6 +191,54 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin XCBuildConfiguration section */
+		18A274FFAB13AAFA46D90F43 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = DD7BPD5LT3;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = ExpenseTracker/Info.plist;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.michelleconchina.ExpenseTracker;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Release;
+		};
+		36E99FB07DD4A4921C063C34 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = DD7BPD5LT3;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = ExpenseTracker/Info.plist;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.michelleconchina.ExpenseTracker;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Debug;
+		};
 		401AA28D35E28D431E7672C9 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -308,69 +356,23 @@
 			};
 			name = Release;
 		};
-		36E99FB07DD4A4921C063C34 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				GENERATE_INFOPLIST_FILE = NO;
-				INFOPLIST_FILE = ExpenseTracker/Info.plist;
-				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-				);
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.michelleconchina.ExpenseTracker;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_EMIT_LOC_STRINGS = YES;
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = 1;
-			};
-			name = Debug;
-		};
-		18A274FFAB13AAFA46D90F43 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				GENERATE_INFOPLIST_FILE = NO;
-				INFOPLIST_FILE = ExpenseTracker/Info.plist;
-				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-				);
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.michelleconchina.ExpenseTracker;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_EMIT_LOC_STRINGS = YES;
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = 1;
-			};
-			name = Release;
-		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		54CAD825EC030A5369B9B149 /* Build configuration list for PBXProject "ExpenseTracker" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				401AA28D35E28D431E7672C9 /* Debug */,
-				F446D7EB57A98585D79BBA2F /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
 		47A3CAEA701A8D660E762E65 /* Build configuration list for PBXNativeTarget "ExpenseTracker" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				36E99FB07DD4A4921C063C34 /* Debug */,
 				18A274FFAB13AAFA46D90F43 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		54CAD825EC030A5369B9B149 /* Build configuration list for PBXProject "ExpenseTracker" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				401AA28D35E28D431E7672C9 /* Debug */,
+				F446D7EB57A98585D79BBA2F /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
