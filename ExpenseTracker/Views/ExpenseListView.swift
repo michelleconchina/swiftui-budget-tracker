@@ -43,7 +43,7 @@ struct ExpenseListView: View {
                         } header: {
                             Text("Today: \(todayTotal, format: .currency(code: currencyCode))")
                                 .font(.headline)
-                                .foregroundStyle(.secondary)
+                                .foregroundStyle(.green)
                                 .textCase(nil)
                         }
 

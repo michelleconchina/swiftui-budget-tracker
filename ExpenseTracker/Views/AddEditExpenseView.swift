@@ -6,9 +6,14 @@ struct AddEditExpenseView: View {
     @Environment(\.dismiss) private var dismiss
 
     @State private var formViewModel: ExpenseFormViewModel
-    @State private var errorMessage: String?
+    @State private var formError: ExpenseFormError?
+    @FocusState private var focusedField: Field?
 
     private let expenseToEdit: Expense?
+
+    private enum Field {
+        case title, amount
+    }
 
     init(editing expense: Expense? = nil) {
         self.expenseToEdit = expense
@@ -18,16 +23,23 @@ struct AddEditExpenseView: View {
     var body: some View {
         NavigationStack {
             Form {
-                if let errorMessage {
-                    Section {
-                        Text(errorMessage)
+                if let formError {
+                    Label(formError.errorDescription ?? "Something went wrong.", systemImage: "exclamationmark.triangle.fill")
+                            .font(.subheadline)
                             .foregroundStyle(.red)
-                    }
+                            .listRowBackground(Color.red.opacity(0.12))
                 }
+
                 Section("Details") {
                     TextField("Title", text: $formViewModel.title)
+                        .focused($focusedField, equals: .title)
+                        .fieldErrorStyle(isInvalid: formError == .emptyTitle)
+
                     TextField("Amount", text: $formViewModel.amountText)
                         .keyboardType(.decimalPad)
+                        .focused($focusedField, equals: .amount)
+                        .fieldErrorStyle(isInvalid: formError == .invalidAmount)
+
                     Picker("Category", selection: $formViewModel.category) {
                         ForEach(ExpenseCategory.allCases) { category in
                             Label(category.displayName, systemImage: category.systemImage)
@@ -51,6 +63,8 @@ struct AddEditExpenseView: View {
                     Button("Save", action: save)
                 }
             }
+            .onChange(of: formViewModel.title) { formError = nil }
+            .onChange(of: formViewModel.amountText) { formError = nil }
         }
     }
 
@@ -63,8 +77,22 @@ struct AddEditExpenseView: View {
                 modelContext.insert(expense)
             }
             dismiss()
+        } catch let error as ExpenseFormError {
+            formError = error
+            focusedField = error == .emptyTitle ? .title : .amount
         } catch {
-            errorMessage = error.localizedDescription
+            formError = nil
+        }
+    }
+}
+
+private extension View {
+    @ViewBuilder
+    func fieldErrorStyle(isInvalid: Bool) -> some View {
+        if isInvalid {
+            self.foregroundStyle(.red)
+        } else {
+            self
         }
     }
 }
