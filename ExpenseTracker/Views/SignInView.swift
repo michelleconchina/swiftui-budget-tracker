@@ -1,5 +1,7 @@
 import SwiftUI
 import FirebaseAuth
+import GoogleSignIn
+import GoogleSignInSwift
 
 struct SignInView: View {
     @State private var email = ""
@@ -12,6 +14,12 @@ struct SignInView: View {
     var body: some View {
         NavigationStack {
             Form {
+                Section {
+                    GoogleSignInButton {
+                        signInWithGoogle()
+                    }
+                }
+
                 Section {
                     TextField("Email", text: $email)
                         .keyboardType(.emailAddress)
@@ -54,6 +62,31 @@ struct SignInView: View {
             onSignedIn()
         } catch {
             errorMessage = error.localizedDescription
+        }
+    }
+
+    private func signInWithGoogle() {
+        guard let rootViewController = UIApplication.shared.connectedScenes
+            .compactMap({ ($0 as? UIWindowScene)?.keyWindow })
+            .first?.rootViewController
+        else { return }
+
+        GIDSignIn.sharedInstance.signIn(withPresenting: rootViewController) { result, error in
+            if let error {
+                errorMessage = error.localizedDescription
+                return
+            }
+            guard let idToken = result?.user.idToken?.tokenString,
+                  let accessToken = result?.user.accessToken.tokenString else { return }
+
+            let credential = GoogleAuthProvider.credential(withIDToken: idToken, accessToken: accessToken)
+            Auth.auth().signIn(with: credential) { _, error in
+                if let error {
+                    errorMessage = error.localizedDescription
+                } else {
+                    onSignedIn()
+                }
+            }
         }
     }
 }

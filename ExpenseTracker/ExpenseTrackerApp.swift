@@ -1,6 +1,7 @@
 import SwiftUI
 import FirebaseCore
 import FirebaseAuth
+import GoogleSignIn
 
 @main
 struct ExpenseTrackerApp: App {
@@ -9,9 +10,12 @@ struct ExpenseTrackerApp: App {
 
     init() {
         FirebaseApp.configure()
+        if let clientID = FirebaseApp.app()?.options.clientID {
+            GIDSignIn.sharedInstance.configuration = GIDConfiguration(clientID: clientID)
+        }
         _isSignedIn = State(initialValue: Auth.auth().currentUser != nil)
     }
-    
+
     var body: some Scene {
         WindowGroup {
             Group {
@@ -34,6 +38,9 @@ struct ExpenseTrackerApp: App {
                         store.start()
                     }
                 }
+            }
+            .onOpenURL { url in
+                GIDSignIn.sharedInstance.handle(url)
             }
         }
     }
