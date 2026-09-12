@@ -4,7 +4,7 @@ set -e
 XCODEBUILD_DEVICE_ID="00008120-00110DC93C05A01E"
 DEVICECTL_DEVICE_ID="15D2CDB6-F7EA-5C8F-9208-54E16A00FFB2"
 BUNDLE_ID="com.michelleconchina.ExpenseTracker"
-DERIVED_DATA="build"
+DERIVED_DATA="$HOME/.xcode-builds/ExpenseTracker"
 
 xcodebuild \
   -project ExpenseTracker.xcodeproj \
