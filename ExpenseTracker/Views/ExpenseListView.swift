@@ -42,6 +42,30 @@ struct ExpenseListView: View {
         AppCurrency.code
     }
 
+    private static let csvDateFormatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy-MM-dd"
+        return formatter
+    }()
+
+    private var csvExportURL: URL? {
+        var csv = "Date,Title,Category,Amount\n"
+        for expense in filteredExpenses.sorted(by: { $0.date < $1.date }) {
+            let dateString = Self.csvDateFormatter.string(from: expense.date)
+            let escapedTitle = expense.title.replacingOccurrences(of: "\"", with: "\"\"")
+            let amountString = String(format: "%.2f", expense.amount)
+            csv += "\(dateString),\"\(escapedTitle)\",\(expense.category.displayName),\(amountString)\n"
+        }
+
+        let url = FileManager.default.temporaryDirectory.appendingPathComponent("Expenses.csv")
+        do {
+            try csv.write(to: url, atomically: true, encoding: .utf8)
+            return url
+        } catch {
+            return nil
+        }
+    }
+
     var body: some View {
         NavigationStack {
             Group {
@@ -134,6 +158,14 @@ struct ExpenseListView: View {
                         Image(systemName: selectedCategory == nil ? "line.3.horizontal.decrease.circle" : "line.3.horizontal.decrease.circle.fill")
                     }
                     .accessibilityLabel(selectedCategory == nil ? "Filter by category" : "Filtering by \(selectedCategory!.displayName)")
+                }
+                ToolbarItem(placement: .topBarTrailing) {
+                    if let csvExportURL {
+                        ShareLink(item: csvExportURL) {
+                            Image(systemName: "square.and.arrow.up")
+                        }
+                        .accessibilityLabel("Export as CSV")
+                    }
                 }
                 ToolbarItem(placement: .topBarTrailing) {
                     Button {
