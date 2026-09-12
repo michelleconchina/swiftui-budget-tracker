@@ -20,13 +20,17 @@ struct ExpenseRowView: View {
                     .font(.body)
                     .lineLimit(1)
                     .truncationMode(.tail)
-                Text(expense.date, format: .dateTime.day().month().year())
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
+                if let note = expense.note {
+                    Text(note)
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                } else {
+                    Text(expense.date, format: .dateTime.day().month().year())
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
             }
-
             Spacer()
-
             Text(formattedAmount)
                 .font(.body.monospacedDigit())
                 .lineLimit(1)
