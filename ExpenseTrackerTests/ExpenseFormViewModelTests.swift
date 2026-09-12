@@ -80,26 +80,27 @@ final class ExpenseFormViewModelTests: XCTestCase {
         XCTAssertEqual(expense.category, .food)
     }
 
-    func test_apply_updatesExistingExpenseInPlace() throws {
-        let expense = Expense(title: "Old Title", amount: 1, category: .other)
-        let sut = ExpenseFormViewModel(editing: expense)
+    func test_makeUpdatedExpense_returnsCopyWithNewFields() throws {
+        let original = Expense(id: "abc123", title: "Old Title", amount: 1, category: .other)
+        let sut = ExpenseFormViewModel(editing: original)
         sut.title = "New Title"
         sut.amountText = "99"
         sut.category = .transport
 
-        try sut.apply(to: expense)
+        let updated = try sut.makeUpdatedExpense(from: original)
 
-        XCTAssertEqual(expense.title, "New Title")
-        XCTAssertEqual(expense.amount, 99)
-        XCTAssertEqual(expense.category, .transport)
+        XCTAssertEqual(updated.id, "abc123")
+        XCTAssertEqual(updated.title, "New Title")
+        XCTAssertEqual(updated.amount, 99)
+        XCTAssertEqual(updated.category, .transport)
     }
 
-    func test_apply_doesNotMutateExpenseWhenValidationFails() {
-        let expense = Expense(title: "Old Title", amount: 1, category: .other)
-        let sut = ExpenseFormViewModel(editing: expense)
+    func test_makeUpdatedExpense_throwsWithoutMutatingOriginal() {
+        let original = Expense(id: "abc123", title: "Old Title", amount: 1, category: .other)
+        let sut = ExpenseFormViewModel(editing: original)
         sut.title = ""
 
-        XCTAssertThrowsError(try sut.apply(to: expense))
-        XCTAssertEqual(expense.title, "Old Title")
+        XCTAssertThrowsError(try sut.makeUpdatedExpense(from: original))
+        XCTAssertEqual(original.title, "Old Title")
     }
 }

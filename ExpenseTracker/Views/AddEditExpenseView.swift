@@ -1,8 +1,7 @@
 import SwiftUI
-import SwiftData
 
 struct AddEditExpenseView: View {
-    @Environment(\.modelContext) private var modelContext
+    @Environment(ExpenseStore.self) private var store
     @Environment(\.dismiss) private var dismiss
 
     @State private var formViewModel: ExpenseFormViewModel
@@ -24,21 +23,33 @@ struct AddEditExpenseView: View {
         NavigationStack {
             Form {
                 if let formError {
-                    Label(formError.errorDescription ?? "Something went wrong.", systemImage: "exclamationmark.triangle.fill")
+                    Section {
+                        Label(formError.errorDescription ?? "Something went wrong.", systemImage: "exclamationmark.triangle.fill")
                             .font(.subheadline)
                             .foregroundStyle(.red)
                             .listRowBackground(Color.red.opacity(0.12))
+                    }
                 }
 
                 Section("Details") {
-                    TextField("Title", text: $formViewModel.title)
-                        .focused($focusedField, equals: .title)
-                        .fieldErrorStyle(isInvalid: formError == .emptyTitle)
+                    HStack(spacing: 12) {
+                        Image(systemName: "text.alignleft")
+                            .foregroundStyle(.secondary)
+                            .frame(width: 20)
+                        TextField("Title", text: $formViewModel.title)
+                            .focused($focusedField, equals: .title)
+                            .fieldErrorStyle(isInvalid: formError == .emptyTitle)
+                    }
 
-                    TextField("Amount", text: $formViewModel.amountText)
-                        .keyboardType(.decimalPad)
-                        .focused($focusedField, equals: .amount)
-                        .fieldErrorStyle(isInvalid: formError == .invalidAmount)
+                    HStack(spacing: 12) {
+                        Image(systemName: "banknote")
+                            .foregroundStyle(.secondary)
+                            .frame(width: 20)
+                        TextField("Amount", text: $formViewModel.amountText)
+                            .keyboardType(.decimalPad)
+                            .focused($focusedField, equals: .amount)
+                            .fieldErrorStyle(isInvalid: formError == .invalidAmount)
+                    }
 
                     Picker("Category", selection: $formViewModel.category) {
                         ForEach(ExpenseCategory.allCases) { category in
@@ -71,10 +82,11 @@ struct AddEditExpenseView: View {
     private func save() {
         do {
             if let expenseToEdit {
-                try formViewModel.apply(to: expenseToEdit)
+                let updated = try formViewModel.makeUpdatedExpense(from: expenseToEdit)
+                try store.update(updated)
             } else {
                 let expense = try formViewModel.makeExpense()
-                modelContext.insert(expense)
+                try store.add(expense)
             }
             dismiss()
         } catch let error as ExpenseFormError {
@@ -99,5 +111,5 @@ private extension View {
 
 #Preview {
     AddEditExpenseView()
-        .modelContainer(for: Expense.self, inMemory: true)
+        .environment(ExpenseStore())
 }

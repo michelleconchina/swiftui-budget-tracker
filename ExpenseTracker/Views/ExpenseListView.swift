@@ -1,23 +1,19 @@
 import SwiftUI
-import SwiftData
 
 struct ExpenseListView: View {
-    @Environment(\.modelContext) private var modelContext
-    @Query(sort: \Expense.date, order: .reverse) private var expenses: [Expense]
+    @Environment(ExpenseStore.self) private var store
 
     @State private var isPresentingAdd = false
     @State private var expenseToEdit: Expense?
     @State private var searchText = ""
     @State private var selectedCategory: ExpenseCategory?
 
-    private var listViewModel: ExpenseListViewModel {
-        ExpenseListViewModel(modelContext: modelContext)
-    }
+    private var expenses: [Expense] { store.expenses }
 
     private var todayTotal: Double {
-        listViewModel.total(of: expenses.filter { Calendar.current.isDateInToday($0.date) })
+        store.total(of: expenses.filter { Calendar.current.isDateInToday($0.date) })
     }
-    
+
     private var isFiltering: Bool {
         !searchText.isEmpty || selectedCategory != nil
     }
@@ -104,7 +100,7 @@ struct ExpenseListView: View {
                                     .buttonStyle(.plain)
                                     .swipeActions(edge: .trailing) {
                                         Button(role: .destructive) {
-                                            listViewModel.delete([expense])
+                                            store.delete([expense])
                                         } label: {
                                             Label("Delete", systemImage: "trash")
                                         }
@@ -121,7 +117,7 @@ struct ExpenseListView: View {
                                 HStack {
                                     Text(group.day, format: .dateTime.year().month().day())
                                     Spacer()
-                                    Text(listViewModel.total(of: group.expenses), format: .currency(code: currencyCode))
+                                    Text(store.total(of: group.expenses), format: .currency(code: currencyCode))
                                 }
                             }
                         }
@@ -192,5 +188,5 @@ struct ExpenseListView: View {
 
 #Preview {
     ExpenseListView()
-        .modelContainer(for: Expense.self, inMemory: true)
+        .environment(ExpenseStore())
 }

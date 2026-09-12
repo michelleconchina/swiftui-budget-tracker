@@ -1,9 +1,8 @@
 import Foundation
-import SwiftData
+import FirebaseFirestore
 
-@Model
-final class Expense {
-    var id: UUID
+struct Expense: Identifiable, Codable, Equatable {
+    @DocumentID var id: String?
     var title: String
     var amount: Double
     var category: ExpenseCategory
@@ -11,7 +10,7 @@ final class Expense {
     var note: String?
 
     init(
-        id: UUID = UUID(),
+        id: String? = nil,
         title: String,
         amount: Double,
         category: ExpenseCategory,

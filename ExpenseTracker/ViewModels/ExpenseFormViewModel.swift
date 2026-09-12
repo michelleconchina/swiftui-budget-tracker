@@ -13,8 +13,6 @@ enum ExpenseFormError: LocalizedError, Equatable {
     }
 }
 
-/// Owns the editable state for the add/edit expense form and validates it
-/// independently of SwiftData, so it can be unit tested without a ModelContext.
 @Observable
 final class ExpenseFormViewModel {
     var title: String
@@ -23,7 +21,7 @@ final class ExpenseFormViewModel {
     var date: Date
     var note: String
 
-    private let editingExpenseID: UUID?
+    private let editingExpenseID: String?
 
     var isEditing: Bool { editingExpenseID != nil }
 
@@ -48,17 +46,17 @@ final class ExpenseFormViewModel {
         return (trimmedTitle, amount, category, date, trimmedNote.isEmpty ? nil : trimmedNote)
     }
 
-    /// Applies the validated fields onto an existing expense (edit flow).
-    func apply(to expense: Expense) throws {
+    func makeUpdatedExpense(from original: Expense) throws -> Expense {
         let fields = try validate()
-        expense.title = fields.title
-        expense.amount = fields.amount
-        expense.category = fields.category
-        expense.date = fields.date
-        expense.note = fields.note
+        var updated = original
+        updated.title = fields.title
+        updated.amount = fields.amount
+        updated.category = fields.category
+        updated.date = fields.date
+        updated.note = fields.note
+        return updated
     }
 
-    /// Builds a new expense from the validated fields (add flow).
     func makeExpense() throws -> Expense {
         let fields = try validate()
         return Expense(

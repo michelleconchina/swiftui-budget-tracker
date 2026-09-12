@@ -1,13 +1,12 @@
 import SwiftUI
-import SwiftData
 import Charts
 
 struct SummaryView: View {
-    @Query private var expenses: [Expense]
+    @Environment(ExpenseStore.self) private var store
 
     private var monthExpenses: [Expense] {
         let calendar = Calendar.current
-        return expenses.filter { calendar.isDate($0.date, equalTo: .now, toGranularity: .month) }
+        return store.expenses.filter { calendar.isDate($0.date, equalTo: .now, toGranularity: .month) }
     }
 
     private var monthTotal: Double {
@@ -88,5 +87,5 @@ struct SummaryView: View {
 
 #Preview {
     SummaryView()
-        .modelContainer(for: Expense.self, inMemory: true)
+        .environment(ExpenseStore())
 }
