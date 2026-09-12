@@ -50,9 +50,12 @@ struct ExpenseListView: View {
                         ForEach(dayGroups, id: \.day) { group in
                             Section {
                                 ForEach(group.expenses) { expense in
-                                    ExpenseRowView(expense: expense)
-                                        .contentShape(Rectangle())
-                                        .onTapGesture { expenseToEdit = expense }
+                                    Button {
+                                        expenseToEdit = expense
+                                    } label: {
+                                        ExpenseRowView(expense: expense)
+                                    }
+                                    .buttonStyle(.plain)
                                 }
                                 .onDelete { offsets in
                                     listViewModel.delete(at: offsets, from: group.expenses)
