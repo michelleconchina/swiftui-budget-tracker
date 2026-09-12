@@ -7,6 +7,8 @@ struct ExpenseListView: View {
 
     @State private var isPresentingAdd = false
     @State private var expenseToEdit: Expense?
+    @State private var searchText = ""
+    @State private var selectedCategory: ExpenseCategory?
 
     private var listViewModel: ExpenseListViewModel {
         ExpenseListViewModel(modelContext: modelContext)
@@ -15,9 +17,22 @@ struct ExpenseListView: View {
     private var todayTotal: Double {
         listViewModel.total(of: expenses.filter { Calendar.current.isDateInToday($0.date) })
     }
+    
+    private var isFiltering: Bool {
+        !searchText.isEmpty || selectedCategory != nil
+    }
+
+    private var filteredExpenses: [Expense] {
+        expenses.filter { expense in
+            let matchesCategory = selectedCategory == nil || expense.category == selectedCategory
+            let matchesSearch = searchText.isEmpty
+                || expense.title.localizedCaseInsensitiveContains(searchText)
+            return matchesCategory && matchesSearch
+        }
+    }
 
     private var dayGroups: [(day: Date, expenses: [Expense])] {
-        let groups = Dictionary(grouping: expenses) { Calendar.current.startOfDay(for: $0.date) }
+        let groups = Dictionary(grouping: filteredExpenses) { Calendar.current.startOfDay(for: $0.date) }
         return groups
             .sorted { $0.key > $1.key }
             .map { (day: $0.key, expenses: $0.value) }
@@ -30,21 +45,28 @@ struct ExpenseListView: View {
     var body: some View {
         NavigationStack {
             Group {
-                if expenses.isEmpty {
+                if filteredExpenses.isEmpty {
                     ContentUnavailableView(
-                        "No Expenses",
-                        systemImage: "creditcard",
-                        description: Text("Tap + to add your first expense.")
+                        expenses.isEmpty ? "No Expenses" : "No Matching Expenses",
+                        systemImage: expenses.isEmpty ? "creditcard" : "magnifyingglass",
+                        description: Text(expenses.isEmpty ? "Tap + to add your first expense." : "Try a different search or category.")
                     )
                 } else {
                     List {
                         Section {
                             EmptyView()
                         } header: {
-                            Text("Today: \(todayTotal, format: .currency(code: currencyCode))")
-                                .font(.headline)
-                                .foregroundStyle(.green)
-                                .textCase(nil)
+                            if isFiltering {
+                                Label("Filter active — showing \(filteredExpenses.count) of \(expenses.count)", systemImage: "line.3.horizontal.decrease.circle.fill")
+                                    .font(.subheadline)
+                                    .foregroundStyle(.secondary)
+                                    .textCase(nil)
+                            } else {
+                                Text("Today: \(todayTotal, format: .currency(code: currencyCode))")
+                                    .font(.headline)
+                                    .foregroundStyle(.green)
+                                    .textCase(nil)
+                            }
                         }
 
                         ForEach(dayGroups, id: \.day) { group in
@@ -72,8 +94,36 @@ struct ExpenseListView: View {
                 }
             }
             .navigationTitle("Expenses")
+            .searchable(text: $searchText, prompt: "Search expenses")
             .toolbar {
-                ToolbarItem(placement: .bottomBar) {
+                ToolbarItem(placement: .topBarLeading) {
+                    Menu {
+                        Button {
+                            selectedCategory = nil
+                        } label: {
+                            if selectedCategory == nil {
+                                Label("All Categories", systemImage: "checkmark")
+                            } else {
+                                Text("All Categories")
+                            }
+                        }
+                        Divider()
+                        ForEach(ExpenseCategory.allCases) { category in
+                            Button {
+                                selectedCategory = category
+                            } label: {
+                                if selectedCategory == category {
+                                    Label(category.displayName, systemImage: "checkmark")
+                                } else {
+                                    Text(category.displayName)
+                                }
+                            }
+                        }
+                    } label: {
+                        Image(systemName: selectedCategory == nil ? "line.3.horizontal.decrease.circle" : "line.3.horizontal.decrease.circle.fill")
+                    }
+                }
+                ToolbarItem(placement: .topBarTrailing) {
                     Button {
                         isPresentingAdd = true
                     } label: {
