@@ -25,7 +25,7 @@ struct ExpenseRowView: View {
                         .font(.caption)
                         .foregroundStyle(.secondary)
                 } else {
-                    Text(expense.date, format: .dateTime.day().month().year())
+                    Text(expense.date, format: .dateTime.weekday(.abbreviated).month().day().year())
                         .font(.caption)
                         .foregroundStyle(.secondary)
                 }
