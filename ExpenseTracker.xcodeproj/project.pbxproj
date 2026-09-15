@@ -14,6 +14,7 @@
 		691F8D57A509DA1AF151C9F7 /* ExpenseFormViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 369EAE81A355C3A05904AEC9 /* ExpenseFormViewModel.swift */; };
 		758E741CE494446DDFADDB1E /* ExpenseTrackerApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80058B5B0A8AB0F8F6284E3A /* ExpenseTrackerApp.swift */; };
 		7818352EA238C65E8C4533D3 /* AddEditExpenseView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42DCC586C32ED9F4E56EB12B /* AddEditExpenseView.swift */; };
+		E96082CD9F1F989B6FB4D971 /* LogExpenseIntent.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDA31E5DF003AA0646F4F5FC /* LogExpenseIntent.swift */; };
 		80A81B814E45E2597EBF13A6 /* AppCurrency.swift in Sources */ = {isa = PBXBuildFile; fileRef = 542AC1896C58D05B1C6779F5 /* AppCurrency.swift */; };
 		9A628C8130557B4400DD89F2 /* ExpenseStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A628C8030557B4400DD89F2 /* ExpenseStore.swift */; };
 		9A628C8830557DC300DD89F2 /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = 9A628C8730557DC300DD89F2 /* FirebaseFirestore */; };
@@ -44,6 +45,7 @@
 		69ED18C43D13107D4CBCB821 /* ExpenseFormViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpenseFormViewModelTests.swift; sourceTree = "<group>"; };
 		6FC7A0456DB4A98079F6DEDF /* ExpenseRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpenseRowView.swift; sourceTree = "<group>"; };
 		80058B5B0A8AB0F8F6284E3A /* ExpenseTrackerApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpenseTrackerApp.swift; sourceTree = "<group>"; };
+		CDA31E5DF003AA0646F4F5FC /* LogExpenseIntent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogExpenseIntent.swift; sourceTree = "<group>"; };
 		9A628C8030557B4400DD89F2 /* ExpenseStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpenseStore.swift; sourceTree = "<group>"; };
 		9A628C9330559ACA00DD89F2 /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		AC4C1FBEF21AE0DA9D0423B6 /* ExpenseTrackerTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ExpenseTrackerTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -103,6 +105,7 @@
 			isa = PBXGroup;
 			children = (
 				80058B5B0A8AB0F8F6284E3A /* ExpenseTrackerApp.swift */,
+				CDA31E5DF003AA0646F4F5FC /* LogExpenseIntent.swift */,
 				542AC1896C58D05B1C6779F5 /* AppCurrency.swift */,
 				459CCD3162D05A2BE862188A /* Models */,
 				08E1A64E228BDCB11331F1D0 /* ViewModels */,
@@ -261,6 +264,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				758E741CE494446DDFADDB1E /* ExpenseTrackerApp.swift in Sources */,
+				E96082CD9F1F989B6FB4D971 /* LogExpenseIntent.swift in Sources */,
 				80A81B814E45E2597EBF13A6 /* AppCurrency.swift in Sources */,
 				F0C39003201F2FA88EA1CD39 /* Expense.swift in Sources */,
 				498DBF4EE12BDA7919BC80B1 /* ExpenseCategory.swift in Sources */,

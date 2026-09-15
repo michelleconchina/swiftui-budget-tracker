@@ -35,3 +35,15 @@ enum ExpenseCategory: String, Codable, CaseIterable, Identifiable {
         self = ExpenseCategory(rawValue: raw) ?? .other
     }
 }
+
+import AppIntents
+
+extension ExpenseCategory: AppEnum {
+    static var typeDisplayRepresentation: TypeDisplayRepresentation = "Expense Category"
+    static var caseDisplayRepresentations: [ExpenseCategory: DisplayRepresentation] = [
+        .food: "Food",
+        .commute: "Commute",
+        .shopping: "Shopping",
+        .other: "Other"
+    ]
+}
