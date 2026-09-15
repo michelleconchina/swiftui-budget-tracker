@@ -25,10 +25,19 @@ final class ExpenseFormViewModel {
 
     var isEditing: Bool { editingExpenseID != nil }
 
+    private static let amountFormatter: NumberFormatter = {
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .decimal
+        formatter.usesGroupingSeparator = false
+        formatter.minimumFractionDigits = 0
+        formatter.maximumFractionDigits = 2
+        return formatter
+    }()
+
     init(editing expense: Expense? = nil) {
         self.editingExpenseID = expense?.id
         self.title = expense?.title ?? ""
-        self.amountText = expense.map { String($0.amount) } ?? ""
+        self.amountText = expense.flatMap { Self.amountFormatter.string(from: $0.amount as NSNumber) } ?? ""
         self.category = expense?.category ?? .other
         self.date = expense?.date ?? .now
         self.note = expense?.note ?? ""

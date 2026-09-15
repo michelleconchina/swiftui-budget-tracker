@@ -19,7 +19,7 @@ final class ExpenseFormViewModelTests: XCTestCase {
 
         XCTAssertTrue(sut.isEditing)
         XCTAssertEqual(sut.title, "Coffee")
-        XCTAssertEqual(sut.amountText, "100.0")
+        XCTAssertEqual(sut.amountText, "100")
         XCTAssertEqual(sut.category, .food)
         XCTAssertEqual(sut.note, "Iced")
     }
