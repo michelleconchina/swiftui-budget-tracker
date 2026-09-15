@@ -59,7 +59,7 @@ struct SummaryView: View {
                                 innerRadius: .ratio(0.6),
                                 angularInset: 1.5
                             )
-                            .foregroundStyle(by: .value("Category", item.category.displayName))
+                            .foregroundStyle(item.category.color)
                             .cornerRadius(4)
                         }
                         .frame(height: 220)
@@ -70,7 +70,7 @@ struct SummaryView: View {
                                 Image(systemName: item.category.systemImage)
                                     .foregroundStyle(.white)
                                     .frame(width: 28, height: 28)
-                                    .background(.tint, in: Circle())
+                                    .background(item.category.color, in: Circle())
                                 Text(item.category.displayName)
                                 Spacer()
                                 Text(item.total, format: .currency(code: currencyCode))

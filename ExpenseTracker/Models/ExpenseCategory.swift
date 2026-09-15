@@ -1,12 +1,9 @@
-import Foundation
+import SwiftUI
 
 enum ExpenseCategory: String, Codable, CaseIterable, Identifiable {
     case food
-    case transport
+    case commute
     case shopping
-    case entertainment
-    case bills
-    case health
     case other
 
     var id: String { rawValue }
@@ -18,12 +15,23 @@ enum ExpenseCategory: String, Codable, CaseIterable, Identifiable {
     var systemImage: String {
         switch self {
         case .food: return "fork.knife"
-        case .transport: return "car.fill"
+        case .commute: return "car.fill"
         case .shopping: return "bag.fill"
-        case .entertainment: return "film.fill"
-        case .bills: return "doc.text.fill"
-        case .health: return "heart.fill"
         case .other: return "ellipsis.circle.fill"
         }
+    }
+
+    var color: Color {
+        switch self {
+        case .food: return .orange
+        case .commute: return .blue
+        case .shopping: return .pink
+        case .other: return .gray
+        }
+    }
+
+    init(from decoder: Decoder) throws {
+        let raw = try decoder.singleValueContainer().decode(String.self)
+        self = ExpenseCategory(rawValue: raw) ?? .other
     }
 }

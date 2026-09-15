@@ -85,14 +85,14 @@ final class ExpenseFormViewModelTests: XCTestCase {
         let sut = ExpenseFormViewModel(editing: original)
         sut.title = "New Title"
         sut.amountText = "99"
-        sut.category = .transport
+        sut.category = .commute
 
         let updated = try sut.makeUpdatedExpense(from: original)
 
         XCTAssertEqual(updated.id, "abc123")
         XCTAssertEqual(updated.title, "New Title")
         XCTAssertEqual(updated.amount, 99)
-        XCTAssertEqual(updated.category, .transport)
+        XCTAssertEqual(updated.category, .commute)
     }
 
     func test_makeUpdatedExpense_throwsWithoutMutatingOriginal() {

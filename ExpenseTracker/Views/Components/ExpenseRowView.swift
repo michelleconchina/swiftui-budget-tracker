@@ -12,7 +12,7 @@ struct ExpenseRowView: View {
             Image(systemName: expense.category.systemImage)
                 .foregroundStyle(.white)
                 .frame(width: 36, height: 36)
-                .background(.tint, in: Circle())
+                .background(expense.category.color, in: Circle())
                 .accessibilityHidden(true)
 
             VStack(alignment: .leading, spacing: 2) {
@@ -46,6 +46,6 @@ struct ExpenseRowView: View {
 #Preview {
     List {
         ExpenseRowView(expense: Expense(title: "Groceries", amount: 42.5, category: .food))
-        ExpenseRowView(expense: Expense(title: "Bus pass", amount: 20, category: .transport))
+        ExpenseRowView(expense: Expense(title: "Bus pass", amount: 20, category: .commute))
     }
 }
