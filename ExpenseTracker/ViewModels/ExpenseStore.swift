@@ -1,6 +1,9 @@
 import Foundation
 import FirebaseFirestore
-import FirebaseAuth
+
+private enum AppUser {
+    static let id = "7f3a9c2e-4b81-4f6d-9a02-e15c8d7b3f41"
+}
 
 @Observable
 final class ExpenseStore {
@@ -9,14 +12,12 @@ final class ExpenseStore {
 
     private var db: Firestore { Firestore.firestore() }
 
-    private var collection: CollectionReference? {
-        guard let uid = Auth.auth().currentUser?.uid else { return nil }
-        return db.collection("users").document(uid).collection("expenses")
+    private var collection: CollectionReference {
+        db.collection("users").document(AppUser.id).collection("expenses")
     }
 
     func start() {
         stop()
-        guard let collection else { return }
         listener = collection
             .order(by: "date", descending: true)
             .addSnapshotListener { [weak self] snapshot, _ in
@@ -32,17 +33,15 @@ final class ExpenseStore {
     }
 
     func add(_ expense: Expense) throws {
-        guard let collection else { return }
         _ = try collection.addDocument(from: expense)
     }
 
     func update(_ expense: Expense) throws {
-        guard let collection, let id = expense.id else { return }
+        guard let id = expense.id else { return }
         try collection.document(id).setData(from: expense)
     }
 
     func delete(_ expenses: [Expense]) {
-        guard let collection else { return }
         for expense in expenses {
             guard let id = expense.id else { continue }
             collection.document(id).delete()
