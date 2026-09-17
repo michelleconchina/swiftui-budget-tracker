@@ -6,6 +6,7 @@ struct AddEditExpenseView: View {
 
     @State private var formViewModel: ExpenseFormViewModel
     @State private var formError: ExpenseFormError?
+    @State private var saveErrorMessage: String?
     @FocusState private var focusedField: Field?
 
     private let expenseToEdit: Expense?
@@ -25,6 +26,15 @@ struct AddEditExpenseView: View {
                 if let formError {
                     Section {
                         Label(formError.errorDescription ?? "Something went wrong.", systemImage: "exclamationmark.triangle.fill")
+                            .font(.subheadline)
+                            .foregroundStyle(.red)
+                            .listRowBackground(Color.red.opacity(0.12))
+                    }
+                }
+
+                if let saveErrorMessage {
+                    Section {
+                        Label(saveErrorMessage, systemImage: "wifi.exclamationmark")
                             .font(.subheadline)
                             .foregroundStyle(.red)
                             .listRowBackground(Color.red.opacity(0.12))
@@ -80,6 +90,8 @@ struct AddEditExpenseView: View {
     }
 
     private func save() {
+        formError = nil
+        saveErrorMessage = nil
         do {
             if let expenseToEdit {
                 let updated = try formViewModel.makeUpdatedExpense(from: expenseToEdit)
@@ -93,7 +105,7 @@ struct AddEditExpenseView: View {
             formError = error
             focusedField = error == .emptyTitle ? .title : .amount
         } catch {
-            formError = nil
+            saveErrorMessage = "Couldn't save this expense. Check your connection and try again."
         }
     }
 }

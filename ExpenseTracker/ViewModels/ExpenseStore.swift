@@ -8,6 +8,7 @@ private enum AppUser {
 @Observable
 final class ExpenseStore {
     private(set) var expenses: [Expense] = []
+    private(set) var isLoading = true
     private var listener: ListenerRegistration?
 
     private var db: Firestore { Firestore.firestore() }
@@ -18,11 +19,13 @@ final class ExpenseStore {
 
     func start() {
         stop()
+        isLoading = true
         listener = collection
             .order(by: "date", descending: true)
             .addSnapshotListener { [weak self] snapshot, _ in
                 guard let self, let snapshot else { return }
                 self.expenses = snapshot.documents.compactMap { try? $0.data(as: Expense.self) }
+                self.isLoading = false
             }
     }
 
@@ -30,6 +33,7 @@ final class ExpenseStore {
         listener?.remove()
         listener = nil
         expenses = []
+        isLoading = true
     }
 
     func add(_ expense: Expense) throws {

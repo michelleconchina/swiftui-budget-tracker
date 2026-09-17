@@ -65,7 +65,9 @@ struct ExpenseListView: View {
     var body: some View {
         NavigationStack {
             Group {
-                if filteredExpenses.isEmpty {
+                if store.isLoading {
+                    ProgressView()
+                } else if filteredExpenses.isEmpty {
                     ContentUnavailableView(
                         expenses.isEmpty ? "No Expenses" : "No Matching Expenses",
                         systemImage: expenses.isEmpty ? "creditcard" : "magnifyingglass",
