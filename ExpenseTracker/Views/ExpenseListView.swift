@@ -7,8 +7,21 @@ struct ExpenseListView: View {
     @State private var expenseToEdit: Expense?
     @State private var searchText = ""
     @State private var selectedCategory: ExpenseCategory?
+    @State private var pendingDelete: PendingDelete?
+    @State private var toastMessage: String?
 
-    private var expenses: [Expense] { store.expenses }
+    private struct PendingDelete {
+        let expense: Expense
+        let task: Task<Void, Never>
+    }
+
+    private var expenses: [Expense] {
+        store.expenses.filter { $0.id != pendingDelete?.expense.id }
+    }
+
+    private var lastCommuteExpense: Expense? {
+        store.expenses.first { $0.category == .commute }
+    }
 
     private var todayTotal: Double {
         store.total(of: expenses.filter { Calendar.current.isDateInToday($0.date) })
@@ -102,7 +115,7 @@ struct ExpenseListView: View {
                                     .buttonStyle(.plain)
                                     .swipeActions(edge: .trailing) {
                                         Button(role: .destructive) {
-                                            store.delete([expense])
+                                            scheduleDelete(expense)
                                         } label: {
                                             Label("Delete", systemImage: "trash")
                                         }
@@ -185,6 +198,140 @@ struct ExpenseListView: View {
                 .presentationDetents([.medium, .large])
                 .presentationDragIndicator(.visible)
         }
+        .safeAreaInset(edge: .bottom) {
+            if pendingDelete == nil, toastMessage == nil, let lastCommuteExpense {
+                RepeatCommuteBar(expense: lastCommuteExpense, currencyCode: currencyCode) {
+                    repeatCommute(lastCommuteExpense)
+                }
+            }
+        }
+        .overlay(alignment: .bottom) {
+            if let pendingDelete {
+                UndoBanner(title: pendingDelete.expense.title, onUndo: undoDelete)
+                    .padding(.horizontal)
+                    .padding(.bottom, 8)
+                    .transition(.move(edge: .bottom).combined(with: .opacity))
+            } else if let toastMessage {
+                ToastBanner(message: toastMessage)
+                    .padding(.horizontal)
+                    .padding(.bottom, 8)
+                    .transition(.move(edge: .bottom).combined(with: .opacity))
+            }
+        }
+        .animation(.snappy(duration: 0.25), value: pendingDelete?.expense.id)
+        .animation(.snappy(duration: 0.25), value: toastMessage)
+    }
+
+    private func scheduleDelete(_ expense: Expense) {
+        if let existing = pendingDelete {
+            existing.task.cancel()
+            store.delete([existing.expense])
+        }
+        let task = Task {
+            try? await Task.sleep(for: .seconds(4))
+            guard !Task.isCancelled else { return }
+            await MainActor.run {
+                store.delete([expense])
+                pendingDelete = nil
+            }
+        }
+        pendingDelete = PendingDelete(expense: expense, task: task)
+    }
+
+    private func undoDelete() {
+        pendingDelete?.task.cancel()
+        pendingDelete = nil
+    }
+
+    private func repeatCommute(_ last: Expense) {
+        let expense = Expense(title: last.title, amount: last.amount, category: .commute)
+        do {
+            try store.add(expense)
+            showToast("Logged \(expense.amount.formatted(.currency(code: currencyCode))) for Commute")
+        } catch {
+            showToast("Couldn't log commute. Try again.")
+        }
+    }
+
+    private func showToast(_ message: String) {
+        toastMessage = message
+        Task {
+            try? await Task.sleep(for: .seconds(2.5))
+            await MainActor.run {
+                if toastMessage == message {
+                    toastMessage = nil
+                }
+            }
+        }
+    }
+}
+
+private struct RepeatCommuteBar: View {
+    let expense: Expense
+    let currencyCode: String
+    let action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            HStack(spacing: 10) {
+                Image(systemName: ExpenseCategory.commute.systemImage)
+                    .foregroundStyle(.white)
+                    .frame(width: 28, height: 28)
+                    .background(ExpenseCategory.commute.color, in: Circle())
+
+                VStack(alignment: .leading, spacing: 0) {
+                    Text("Repeat Commute")
+                        .font(.subheadline.weight(.semibold))
+                    Text(expense.amount, format: .currency(code: currencyCode))
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+
+                Spacer()
+
+                Image(systemName: "plus.circle.fill")
+                    .font(.title3)
+                    .foregroundStyle(ExpenseCategory.commute.color)
+            }
+            .padding(12)
+            .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
+            .padding(.horizontal)
+            .padding(.bottom, 4)
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel("Repeat commute, \(expense.amount.formatted(.currency(code: currencyCode)))")
+        .accessibilityHint("Adds a new commute expense dated today")
+    }
+}
+
+private struct UndoBanner: View {
+    let title: String
+    let onUndo: () -> Void
+
+    var body: some View {
+        HStack {
+            Text("Deleted \"\(title)\"")
+                .font(.subheadline)
+                .lineLimit(1)
+            Spacer()
+            Button("Undo", action: onUndo)
+                .font(.subheadline.weight(.semibold))
+        }
+        .padding()
+        .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+        .accessibilityElement(children: .combine)
+    }
+}
+
+private struct ToastBanner: View {
+    let message: String
+
+    var body: some View {
+        Text(message)
+            .font(.subheadline)
+            .padding()
+            .frame(maxWidth: .infinity)
+            .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
     }
 }
 

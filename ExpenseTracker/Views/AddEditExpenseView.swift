@@ -61,12 +61,14 @@ struct AddEditExpenseView: View {
                             .fieldErrorStyle(isInvalid: formError == .invalidAmount)
                     }
 
-                    Picker("Category", selection: $formViewModel.category) {
-                        ForEach(ExpenseCategory.allCases) { category in
-                            Label(category.displayName, systemImage: category.systemImage)
-                                .tag(category)
-                        }
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text("Category")
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+                        CategoryChipPicker(selection: $formViewModel.category)
                     }
+                    .listRowSeparator(.hidden)
+
                     DatePicker("Date", selection: $formViewModel.date, displayedComponents: .date)
                 }
 
@@ -118,6 +120,43 @@ private extension View {
         } else {
             self
         }
+    }
+}
+
+private struct CategoryChipPicker: View {
+    @Binding var selection: ExpenseCategory
+
+    var body: some View {
+        HStack(spacing: 8) {
+            ForEach(ExpenseCategory.allCases) { category in
+                let isSelected = selection == category
+                Button {
+                    withAnimation(.snappy(duration: 0.2)) {
+                        selection = category
+                    }
+                } label: {
+                    VStack(spacing: 4) {
+                        Image(systemName: category.systemImage)
+                            .font(.system(size: 16, weight: .semibold))
+                        Text(category.displayName)
+                            .font(.caption2.weight(.medium))
+                            .lineLimit(1)
+                            .minimumScaleFactor(0.8)
+                    }
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 10)
+                    .background(
+                        RoundedRectangle(cornerRadius: 12, style: .continuous)
+                            .fill(isSelected ? category.color : Color(.tertiarySystemFill))
+                    )
+                    .foregroundStyle(isSelected ? .white : .primary)
+                }
+                .buttonStyle(.plain)
+                .accessibilityLabel(category.displayName)
+                .accessibilityAddTraits(isSelected ? [.isSelected] : [])
+            }
+        }
+        .padding(.vertical, 2)
     }
 }
 
