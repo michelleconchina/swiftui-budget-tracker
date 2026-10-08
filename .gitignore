@@ -34,6 +34,9 @@ playground.xcworkspace
 .swiftpm/
 .build/
 
+# Xcode-managed SPM package resolution (regenerated locally, varies per machine/Xcode version)
+**/xcshareddata/swiftpm/
+
 # CocoaPods
 #
 # We recommend against adding the Pods directory to your .gitignore. However
