@@ -53,6 +53,15 @@ struct ExpenseListView: View {
         return mostFrequent?.max { $0.date < $1.date }
     }
 
+    private func isAlreadyLoggedToday(_ expense: Expense) -> Bool {
+        store.expenses.contains { candidate in
+            Calendar.current.isDateInToday(candidate.date)
+                && candidate.category == .commute
+                && candidate.title == expense.title
+                && candidate.amount == expense.amount
+        }
+    }
+
     private var todayTotal: Double {
         store.total(of: expenses.filter { Calendar.current.isDateInToday($0.date) })
     }
@@ -229,7 +238,8 @@ struct ExpenseListView: View {
                 .presentationDragIndicator(.visible)
         }
         .safeAreaInset(edge: .bottom) {
-            if pendingDelete == nil, toastMessage == nil, !isRepeatBarDismissed, let suggestedCommuteExpense {
+            if pendingDelete == nil, toastMessage == nil, !isRepeatBarDismissed,
+               let suggestedCommuteExpense, !isAlreadyLoggedToday(suggestedCommuteExpense) {
                 RepeatCommuteBar(
                     expense: suggestedCommuteExpense,
                     currencyCode: currencyCode,
