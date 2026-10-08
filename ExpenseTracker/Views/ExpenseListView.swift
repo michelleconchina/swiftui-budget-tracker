@@ -307,27 +307,23 @@ private struct RepeatCommuteBar: View {
     let onDismiss: () -> Void
 
     var body: some View {
-        HStack(spacing: 8) {
+        HStack(spacing: 10) {
             Button(action: action) {
-                HStack(spacing: 10) {
+                HStack(spacing: 14) {
                     Image(systemName: ExpenseCategory.commute.systemImage)
                         .foregroundStyle(.white)
-                        .frame(width: 28, height: 28)
+                        .frame(width: 36, height: 36)
                         .background(ExpenseCategory.commute.color, in: Circle())
 
-                    VStack(alignment: .leading, spacing: 0) {
+                    VStack(alignment: .leading, spacing: 2) {
                         Text("Repeat Commute")
-                            .font(.subheadline.weight(.semibold))
+                            .font(.headline)
                         Text(expense.amount, format: .currency(code: currencyCode))
-                            .font(.caption)
+                            .font(.subheadline)
                             .foregroundStyle(.secondary)
                     }
 
                     Spacer()
-
-                    Image(systemName: "plus.circle.fill")
-                        .font(.title3)
-                        .foregroundStyle(ExpenseCategory.commute.color)
                 }
             }
             .buttonStyle(.plain)
@@ -336,14 +332,14 @@ private struct RepeatCommuteBar: View {
 
             Button(action: onDismiss) {
                 Image(systemName: "xmark.circle.fill")
-                    .font(.subheadline)
+                    .font(.title3)
                     .foregroundStyle(.secondary)
             }
             .buttonStyle(.plain)
             .accessibilityLabel("Dismiss repeat commute suggestion")
         }
-        .padding(12)
-        .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
+        .padding(16)
+        .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 18, style: .continuous))
         .padding(.horizontal)
         .padding(.bottom, 4)
     }
