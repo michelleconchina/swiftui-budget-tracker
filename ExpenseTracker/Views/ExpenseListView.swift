@@ -20,27 +20,28 @@ struct ExpenseListView: View {
         store.expenses.filter { $0.id != pendingDelete?.expense.id }
     }
 
-    private var lastCommuteExpense: Expense? {
-        store.expenses.first { $0.category == .commute }
+    private var lastExpenseOverall: Expense? {
+        store.expenses.first
     }
 
-    /// The commute expense (title + amount) repeated most often in the last 7 days,
-    /// falling back to the single most recent commute if nothing repeats this week.
-    private var suggestedCommuteExpense: Expense? {
+    /// The expense (title + amount + category) repeated most often in the last 7 days,
+    /// across all categories, falling back to the single most recent expense if nothing repeats.
+    private var suggestedRepeatExpense: Expense? {
         let calendar = Calendar.current
         guard let weekAgo = calendar.date(byAdding: .day, value: -7, to: .now) else {
-            return lastCommuteExpense
+            return lastExpenseOverall
         }
 
-        let recentCommutes = store.expenses.filter { $0.category == .commute && $0.date >= weekAgo }
-        guard !recentCommutes.isEmpty else { return lastCommuteExpense }
+        let recentExpenses = store.expenses.filter { $0.date >= weekAgo }
+        guard !recentExpenses.isEmpty else { return lastExpenseOverall }
 
         struct Key: Hashable {
             let title: String
             let amount: Double
+            let category: ExpenseCategory
         }
 
-        let grouped = Dictionary(grouping: recentCommutes) { Key(title: $0.title, amount: $0.amount) }
+        let grouped = Dictionary(grouping: recentExpenses) { Key(title: $0.title, amount: $0.amount, category: $0.category) }
         let mostFrequent = grouped.values.max { lhs, rhs in
             if lhs.count != rhs.count {
                 return lhs.count < rhs.count
@@ -50,13 +51,16 @@ struct ExpenseListView: View {
             return lhsLatest < rhsLatest
         }
 
-        return mostFrequent?.max { $0.date < $1.date }
+        // Only suggest a repeat when something has actually repeated this week.
+        guard let mostFrequent, mostFrequent.count > 1 else { return lastExpenseOverall }
+
+        return mostFrequent.max { $0.date < $1.date }
     }
 
     private func isAlreadyLoggedToday(_ expense: Expense) -> Bool {
         store.expenses.contains { candidate in
             Calendar.current.isDateInToday(candidate.date)
-                && candidate.category == .commute
+                && candidate.category == expense.category
                 && candidate.title == expense.title
                 && candidate.amount == expense.amount
         }
@@ -239,11 +243,11 @@ struct ExpenseListView: View {
         }
         .safeAreaInset(edge: .bottom) {
             if pendingDelete == nil, toastMessage == nil, !isRepeatBarDismissed,
-               let suggestedCommuteExpense, !isAlreadyLoggedToday(suggestedCommuteExpense) {
-                RepeatCommuteBar(
-                    expense: suggestedCommuteExpense,
+               let suggestedRepeatExpense, !isAlreadyLoggedToday(suggestedRepeatExpense) {
+                RepeatExpenseBar(
+                    expense: suggestedRepeatExpense,
                     currencyCode: currencyCode,
-                    action: { repeatCommute(suggestedCommuteExpense) },
+                    action: { repeatExpense(suggestedRepeatExpense) },
                     onDismiss: { isRepeatBarDismissed = true }
                 )
             }
@@ -286,14 +290,14 @@ struct ExpenseListView: View {
         pendingDelete = nil
     }
 
-    private func repeatCommute(_ last: Expense) {
-        let expense = Expense(title: last.title, amount: last.amount, category: .commute)
+    private func repeatExpense(_ last: Expense) {
+        let expense = Expense(title: last.title, amount: last.amount, category: last.category)
         do {
             try store.add(expense)
             isRepeatBarDismissed = true
-            showToast("Logged \(expense.amount.formatted(.currency(code: currencyCode))) for Commute")
+            showToast("Logged \(expense.amount.formatted(.currency(code: currencyCode))) for \(expense.title)")
         } catch {
-            showToast("Couldn't log commute. Try again.")
+            showToast("Couldn't log that expense. Try again.")
         }
     }
 
@@ -310,7 +314,7 @@ struct ExpenseListView: View {
     }
 }
 
-private struct RepeatCommuteBar: View {
+private struct RepeatExpenseBar: View {
     let expense: Expense
     let currencyCode: String
     let action: () -> Void
@@ -320,14 +324,15 @@ private struct RepeatCommuteBar: View {
         HStack(spacing: 10) {
             Button(action: action) {
                 HStack(spacing: 14) {
-                    Image(systemName: ExpenseCategory.commute.systemImage)
+                    Image(systemName: expense.category.systemImage)
                         .foregroundStyle(.white)
                         .frame(width: 36, height: 36)
-                        .background(ExpenseCategory.commute.color, in: Circle())
+                        .background(expense.category.color, in: Circle())
 
                     VStack(alignment: .leading, spacing: 2) {
-                        Text("Repeat Commute")
+                        Text("Repeat \(expense.title)")
                             .font(.headline)
+                            .lineLimit(1)
                         Text(expense.amount, format: .currency(code: currencyCode))
                             .font(.subheadline)
                             .foregroundStyle(.secondary)
@@ -337,8 +342,8 @@ private struct RepeatCommuteBar: View {
                 }
             }
             .buttonStyle(.plain)
-            .accessibilityLabel("Repeat commute, \(expense.amount.formatted(.currency(code: currencyCode)))")
-            .accessibilityHint("Adds a new commute expense dated today")
+            .accessibilityLabel("Repeat \(expense.title), \(expense.amount.formatted(.currency(code: currencyCode)))")
+            .accessibilityHint("Adds a new \(expense.category.displayName.lowercased()) expense dated today")
 
             Button(action: onDismiss) {
                 Image(systemName: "xmark.circle.fill")
@@ -346,7 +351,7 @@ private struct RepeatCommuteBar: View {
                     .foregroundStyle(.secondary)
             }
             .buttonStyle(.plain)
-            .accessibilityLabel("Dismiss repeat commute suggestion")
+            .accessibilityLabel("Dismiss repeat expense suggestion")
         }
         .padding(16)
         .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 18, style: .continuous))
