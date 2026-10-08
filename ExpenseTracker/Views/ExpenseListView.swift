@@ -9,6 +9,7 @@ struct ExpenseListView: View {
     @State private var selectedCategory: ExpenseCategory?
     @State private var pendingDelete: PendingDelete?
     @State private var toastMessage: String?
+    @State private var isRepeatBarDismissed = false
 
     private struct PendingDelete {
         let expense: Expense
@@ -21,6 +22,35 @@ struct ExpenseListView: View {
 
     private var lastCommuteExpense: Expense? {
         store.expenses.first { $0.category == .commute }
+    }
+
+    /// The commute expense (title + amount) repeated most often in the last 7 days,
+    /// falling back to the single most recent commute if nothing repeats this week.
+    private var suggestedCommuteExpense: Expense? {
+        let calendar = Calendar.current
+        guard let weekAgo = calendar.date(byAdding: .day, value: -7, to: .now) else {
+            return lastCommuteExpense
+        }
+
+        let recentCommutes = store.expenses.filter { $0.category == .commute && $0.date >= weekAgo }
+        guard !recentCommutes.isEmpty else { return lastCommuteExpense }
+
+        struct Key: Hashable {
+            let title: String
+            let amount: Double
+        }
+
+        let grouped = Dictionary(grouping: recentCommutes) { Key(title: $0.title, amount: $0.amount) }
+        let mostFrequent = grouped.values.max { lhs, rhs in
+            if lhs.count != rhs.count {
+                return lhs.count < rhs.count
+            }
+            let lhsLatest = lhs.map(\.date).max() ?? .distantPast
+            let rhsLatest = rhs.map(\.date).max() ?? .distantPast
+            return lhsLatest < rhsLatest
+        }
+
+        return mostFrequent?.max { $0.date < $1.date }
     }
 
     private var todayTotal: Double {
@@ -199,10 +229,13 @@ struct ExpenseListView: View {
                 .presentationDragIndicator(.visible)
         }
         .safeAreaInset(edge: .bottom) {
-            if pendingDelete == nil, toastMessage == nil, let lastCommuteExpense {
-                RepeatCommuteBar(expense: lastCommuteExpense, currencyCode: currencyCode) {
-                    repeatCommute(lastCommuteExpense)
-                }
+            if pendingDelete == nil, toastMessage == nil, !isRepeatBarDismissed, let suggestedCommuteExpense {
+                RepeatCommuteBar(
+                    expense: suggestedCommuteExpense,
+                    currencyCode: currencyCode,
+                    action: { repeatCommute(suggestedCommuteExpense) },
+                    onDismiss: { isRepeatBarDismissed = true }
+                )
             }
         }
         .overlay(alignment: .bottom) {
@@ -247,6 +280,7 @@ struct ExpenseListView: View {
         let expense = Expense(title: last.title, amount: last.amount, category: .commute)
         do {
             try store.add(expense)
+            isRepeatBarDismissed = true
             showToast("Logged \(expense.amount.formatted(.currency(code: currencyCode))) for Commute")
         } catch {
             showToast("Couldn't log commute. Try again.")
@@ -270,37 +304,48 @@ private struct RepeatCommuteBar: View {
     let expense: Expense
     let currencyCode: String
     let action: () -> Void
+    let onDismiss: () -> Void
 
     var body: some View {
-        Button(action: action) {
-            HStack(spacing: 10) {
-                Image(systemName: ExpenseCategory.commute.systemImage)
-                    .foregroundStyle(.white)
-                    .frame(width: 28, height: 28)
-                    .background(ExpenseCategory.commute.color, in: Circle())
+        HStack(spacing: 8) {
+            Button(action: action) {
+                HStack(spacing: 10) {
+                    Image(systemName: ExpenseCategory.commute.systemImage)
+                        .foregroundStyle(.white)
+                        .frame(width: 28, height: 28)
+                        .background(ExpenseCategory.commute.color, in: Circle())
 
-                VStack(alignment: .leading, spacing: 0) {
-                    Text("Repeat Commute")
-                        .font(.subheadline.weight(.semibold))
-                    Text(expense.amount, format: .currency(code: currencyCode))
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
+                    VStack(alignment: .leading, spacing: 0) {
+                        Text("Repeat Commute")
+                            .font(.subheadline.weight(.semibold))
+                        Text(expense.amount, format: .currency(code: currencyCode))
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
+
+                    Spacer()
+
+                    Image(systemName: "plus.circle.fill")
+                        .font(.title3)
+                        .foregroundStyle(ExpenseCategory.commute.color)
                 }
-
-                Spacer()
-
-                Image(systemName: "plus.circle.fill")
-                    .font(.title3)
-                    .foregroundStyle(ExpenseCategory.commute.color)
             }
-            .padding(12)
-            .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
-            .padding(.horizontal)
-            .padding(.bottom, 4)
+            .buttonStyle(.plain)
+            .accessibilityLabel("Repeat commute, \(expense.amount.formatted(.currency(code: currencyCode)))")
+            .accessibilityHint("Adds a new commute expense dated today")
+
+            Button(action: onDismiss) {
+                Image(systemName: "xmark.circle.fill")
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+            }
+            .buttonStyle(.plain)
+            .accessibilityLabel("Dismiss repeat commute suggestion")
         }
-        .buttonStyle(.plain)
-        .accessibilityLabel("Repeat commute, \(expense.amount.formatted(.currency(code: currencyCode)))")
-        .accessibilityHint("Adds a new commute expense dated today")
+        .padding(12)
+        .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
+        .padding(.horizontal)
+        .padding(.bottom, 4)
     }
 }
 
