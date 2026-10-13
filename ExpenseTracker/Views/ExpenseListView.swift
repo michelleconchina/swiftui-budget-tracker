@@ -85,6 +85,7 @@ struct ExpenseListView: View {
             let matchesCategory = selectedCategory == nil || expense.category == selectedCategory
             let matchesSearch = searchText.isEmpty
                 || expense.title.localizedCaseInsensitiveContains(searchText)
+                || (expense.note?.localizedCaseInsensitiveContains(searchText) ?? false)
             return matchesCategory && matchesSearch
         }
     }
@@ -107,12 +108,13 @@ struct ExpenseListView: View {
     }()
 
     private var csvExportURL: URL? {
-        var csv = "Date,Title,Category,Amount\n"
+        var csv = "Date,Title,Category,Amount,Note\n"
         for expense in filteredExpenses.sorted(by: { $0.date < $1.date }) {
             let dateString = Self.csvDateFormatter.string(from: expense.date)
             let escapedTitle = expense.title.replacingOccurrences(of: "\"", with: "\"\"")
             let amountString = String(format: "%.2f", expense.amount)
-            csv += "\(dateString),\"\(escapedTitle)\",\(expense.category.displayName),\(amountString)\n"
+            let escapedNote = (expense.note ?? "").replacingOccurrences(of: "\"", with: "\"\"")
+            csv += "\(dateString),\"\(escapedTitle)\",\(expense.category.displayName),\(amountString),\"\(escapedNote)\"\n"
         }
 
         let url = FileManager.default.temporaryDirectory.appendingPathComponent("Expenses.csv")
