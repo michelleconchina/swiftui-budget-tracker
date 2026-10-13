@@ -48,7 +48,7 @@ final class ExpenseFormViewModel {
         guard !trimmedTitle.isEmpty else {
             throw ExpenseFormError.emptyTitle
         }
-        guard let amount = Double(amountText), amount > 0 else {
+        guard let amount = Self.amountFormatter.number(from: amountText)?.doubleValue, amount > 0 else {
             throw ExpenseFormError.invalidAmount
         }
         let trimmedNote = note.trimmingCharacters(in: .whitespacesAndNewlines)
