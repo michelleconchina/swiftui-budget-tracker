@@ -280,17 +280,32 @@ struct ExpenseListView: View {
     private func scheduleDelete(_ expense: Expense) {
         if let existing = pendingDelete {
             existing.task.cancel()
-            store.delete([existing.expense])
+            Task { await finalizeDelete(existing.expense) }
         }
         let task = Task {
             try? await Task.sleep(for: .seconds(4))
             guard !Task.isCancelled else { return }
-            await MainActor.run {
-                store.delete([expense])
-                pendingDelete = nil
-            }
+            await finalizeDelete(expense)
         }
         pendingDelete = PendingDelete(expense: expense, task: task)
+    }
+
+    private func finalizeDelete(_ expense: Expense) async {
+        do {
+            try await store.delete([expense])
+            await MainActor.run {
+                if pendingDelete?.expense.id == expense.id {
+                    pendingDelete = nil
+                }
+            }
+        } catch {
+            await MainActor.run {
+                if pendingDelete?.expense.id == expense.id {
+                    pendingDelete = nil
+                }
+                showToast("Couldn't delete \"\(expense.title)\". Try again.")
+            }
+        }
     }
 
     private func undoDelete() {
