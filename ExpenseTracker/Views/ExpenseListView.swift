@@ -9,11 +9,23 @@ struct ExpenseListView: View {
     @State private var selectedCategory: ExpenseCategory?
     @State private var pendingDelete: PendingDelete?
     @State private var toastMessage: String?
-    @State private var isRepeatBarDismissed = false
+    @State private var dismissedSuggestionKey: RepeatKey?
 
     private struct PendingDelete {
         let expense: Expense
         let task: Task<Void, Never>
+    }
+
+    private struct RepeatKey: Hashable {
+        let title: String
+        let amount: Double
+        let category: ExpenseCategory
+
+        init(_ expense: Expense) {
+            title = expense.title
+            amount = expense.amount
+            category = expense.category
+        }
     }
 
     private var expenses: [Expense] {
@@ -35,13 +47,7 @@ struct ExpenseListView: View {
         let recentExpenses = store.expenses.filter { $0.date >= weekAgo }
         guard !recentExpenses.isEmpty else { return lastExpenseOverall }
 
-        struct Key: Hashable {
-            let title: String
-            let amount: Double
-            let category: ExpenseCategory
-        }
-
-        let grouped = Dictionary(grouping: recentExpenses) { Key(title: $0.title, amount: $0.amount, category: $0.category) }
+        let grouped = Dictionary(grouping: recentExpenses, by: RepeatKey.init)
         let mostFrequent = grouped.values.max { lhs, rhs in
             if lhs.count != rhs.count {
                 return lhs.count < rhs.count
@@ -242,13 +248,15 @@ struct ExpenseListView: View {
                 .presentationDragIndicator(.visible)
         }
         .safeAreaInset(edge: .bottom) {
-            if pendingDelete == nil, toastMessage == nil, !isRepeatBarDismissed,
-               let suggestedRepeatExpense, !isAlreadyLoggedToday(suggestedRepeatExpense) {
+            if pendingDelete == nil, toastMessage == nil,
+               let suggestedRepeatExpense,
+               dismissedSuggestionKey != RepeatKey(suggestedRepeatExpense),
+               !isAlreadyLoggedToday(suggestedRepeatExpense) {
                 RepeatExpenseBar(
                     expense: suggestedRepeatExpense,
                     currencyCode: currencyCode,
                     action: { repeatExpense(suggestedRepeatExpense) },
-                    onDismiss: { isRepeatBarDismissed = true }
+                    onDismiss: { dismissedSuggestionKey = RepeatKey(suggestedRepeatExpense) }
                 )
             }
         }
@@ -294,7 +302,7 @@ struct ExpenseListView: View {
         let expense = Expense(title: last.title, amount: last.amount, category: last.category)
         do {
             try store.add(expense)
-            isRepeatBarDismissed = true
+            dismissedSuggestionKey = RepeatKey(last)
             showToast("Logged \(expense.amount.formatted(.currency(code: currencyCode))) for \(expense.title)")
         } catch {
             showToast("Couldn't log that expense. Try again.")
