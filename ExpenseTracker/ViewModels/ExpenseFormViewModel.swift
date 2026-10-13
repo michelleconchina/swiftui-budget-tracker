@@ -34,6 +34,19 @@ final class ExpenseFormViewModel {
         return formatter
     }()
 
+    /// Parses `text` as a decimal amount, accepting either "." or "," as the
+    /// decimal separator regardless of the current locale (NumberFormatter's
+    /// parsing is strict, so a plain locale-aware parse would otherwise reject
+    /// "12.5" under a comma-decimal locale, or "12,5" under a dot-decimal one).
+    private static func parseAmount(_ text: String) -> Double? {
+        let decimalSeparator = amountFormatter.decimalSeparator ?? "."
+        var normalized = text
+        for separator in [",", "."] where separator != decimalSeparator {
+            normalized = normalized.replacingOccurrences(of: separator, with: decimalSeparator)
+        }
+        return amountFormatter.number(from: normalized)?.doubleValue
+    }
+
     init(editing expense: Expense? = nil) {
         self.editingExpenseID = expense?.id
         self.title = expense?.title ?? ""
@@ -48,7 +61,7 @@ final class ExpenseFormViewModel {
         guard !trimmedTitle.isEmpty else {
             throw ExpenseFormError.emptyTitle
         }
-        guard let amount = Self.amountFormatter.number(from: amountText)?.doubleValue, amount > 0 else {
+        guard let amount = Self.parseAmount(amountText), amount > 0 else {
             throw ExpenseFormError.invalidAmount
         }
         let trimmedNote = note.trimmingCharacters(in: .whitespacesAndNewlines)
