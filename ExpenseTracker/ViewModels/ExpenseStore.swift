@@ -45,10 +45,10 @@ final class ExpenseStore {
         try collection.document(id).setData(from: expense)
     }
 
-    func delete(_ expenses: [Expense]) {
+    func delete(_ expenses: [Expense]) async throws {
         for expense in expenses {
             guard let id = expense.id else { continue }
-            collection.document(id).delete()
+            try await collection.document(id).delete()
         }
     }
 
