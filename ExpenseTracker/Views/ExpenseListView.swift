@@ -9,18 +9,67 @@ struct ExpenseListView: View {
     @State private var selectedCategory: ExpenseCategory?
     @State private var pendingDelete: PendingDelete?
     @State private var toastMessage: String?
+    @State private var dismissedSuggestionKey: RepeatKey?
 
     private struct PendingDelete {
         let expense: Expense
         let task: Task<Void, Never>
     }
 
+    private struct RepeatKey: Hashable {
+        let title: String
+        let amount: Double
+        let category: ExpenseCategory
+
+        init(_ expense: Expense) {
+            title = expense.title
+            amount = expense.amount
+            category = expense.category
+        }
+    }
+
     private var expenses: [Expense] {
         store.expenses.filter { $0.id != pendingDelete?.expense.id }
     }
 
-    private var lastCommuteExpense: Expense? {
-        store.expenses.first { $0.category == .commute }
+    private var lastExpenseOverall: Expense? {
+        store.expenses.first
+    }
+
+    /// The expense (title + amount + category) repeated most often in the last 7 days,
+    /// across all categories, falling back to the single most recent expense if nothing repeats.
+    private var suggestedRepeatExpense: Expense? {
+        let calendar = Calendar.current
+        guard let weekAgo = calendar.date(byAdding: .day, value: -7, to: .now) else {
+            return lastExpenseOverall
+        }
+
+        let recentExpenses = store.expenses.filter { $0.date >= weekAgo }
+        guard !recentExpenses.isEmpty else { return lastExpenseOverall }
+
+        let grouped = Dictionary(grouping: recentExpenses, by: RepeatKey.init)
+        let mostFrequent = grouped.values.max { lhs, rhs in
+            if lhs.count != rhs.count {
+                return lhs.count < rhs.count
+            }
+            let lhsLatest = lhs.map(\.date).max() ?? .distantPast
+            let rhsLatest = rhs.map(\.date).max() ?? .distantPast
+            return lhsLatest < rhsLatest
+        }
+
+        // Only suggest a repeat when something has actually repeated this week.
+        guard let mostFrequent, mostFrequent.count > 1 else { return lastExpenseOverall }
+
+        return mostFrequent.max { $0.date < $1.date }
+    }
+
+    private func isAlreadyLoggedToday(_ expense: Expense) -> Bool {
+        store.expenses.contains { candidate in
+            Calendar.current.isDateInToday(candidate.date)
+                && candidate.category == expense.category
+                && candidate.title == expense.title
+                && candidate.amount == expense.amount
+        }
     }
 
     private var todayTotal: Double {
@@ -36,6 +85,7 @@ struct ExpenseListView: View {
             let matchesCategory = selectedCategory == nil || expense.category == selectedCategory
             let matchesSearch = searchText.isEmpty
                 || expense.title.localizedCaseInsensitiveContains(searchText)
+                || (expense.note?.localizedCaseInsensitiveContains(searchText) ?? false)
             return matchesCategory && matchesSearch
         }
     }
@@ -58,12 +108,13 @@ struct ExpenseListView: View {
     }()
 
     private var csvExportURL: URL? {
-        var csv = "Date,Title,Category,Amount\n"
+        var csv = "Date,Title,Category,Amount,Note\n"
         for expense in filteredExpenses.sorted(by: { $0.date < $1.date }) {
             let dateString = Self.csvDateFormatter.string(from: expense.date)
             let escapedTitle = expense.title.replacingOccurrences(of: "\"", with: "\"\"")
             let amountString = String(format: "%.2f", expense.amount)
-            csv += "\(dateString),\"\(escapedTitle)\",\(expense.category.displayName),\(amountString)\n"
+            let escapedNote = (expense.note ?? "").replacingOccurrences(of: "\"", with: "\"\"")
+            csv += "\(dateString),\"\(escapedTitle)\",\(expense.category.displayName),\(amountString),\"\(escapedNote)\"\n"
         }
 
         let url = FileManager.default.temporaryDirectory.appendingPathComponent("Expenses.csv")
@@ -199,10 +250,16 @@ struct ExpenseListView: View {
                 .presentationDragIndicator(.visible)
         }
         .safeAreaInset(edge: .bottom) {
-            if pendingDelete == nil, toastMessage == nil, let lastCommuteExpense {
-                RepeatCommuteBar(expense: lastCommuteExpense, currencyCode: currencyCode) {
-                    repeatCommute(lastCommuteExpense)
-                }
+            if pendingDelete == nil, toastMessage == nil,
+               let suggestedRepeatExpense,
+               dismissedSuggestionKey != RepeatKey(suggestedRepeatExpense),
+               !isAlreadyLoggedToday(suggestedRepeatExpense) {
+                RepeatExpenseBar(
+                    expense: suggestedRepeatExpense,
+                    currencyCode: currencyCode,
+                    action: { repeatExpense(suggestedRepeatExpense) },
+                    onDismiss: { dismissedSuggestionKey = RepeatKey(suggestedRepeatExpense) }
+                )
             }
         }
         .overlay(alignment: .bottom) {
@@ -225,17 +282,32 @@ struct ExpenseListView: View {
     private func scheduleDelete(_ expense: Expense) {
         if let existing = pendingDelete {
             existing.task.cancel()
-            store.delete([existing.expense])
+            Task { await finalizeDelete(existing.expense) }
         }
         let task = Task {
             try? await Task.sleep(for: .seconds(4))
             guard !Task.isCancelled else { return }
-            await MainActor.run {
-                store.delete([expense])
-                pendingDelete = nil
-            }
+            await finalizeDelete(expense)
         }
         pendingDelete = PendingDelete(expense: expense, task: task)
+    }
+
+    private func finalizeDelete(_ expense: Expense) async {
+        do {
+            try await store.delete([expense])
+            await MainActor.run {
+                if pendingDelete?.expense.id == expense.id {
+                    pendingDelete = nil
+                }
+            }
+        } catch {
+            await MainActor.run {
+                if pendingDelete?.expense.id == expense.id {
+                    pendingDelete = nil
+                }
+                showToast("Couldn't delete \"\(expense.title)\". Try again.")
+            }
+        }
     }
 
     private func undoDelete() {
@@ -243,13 +315,14 @@ struct ExpenseListView: View {
         pendingDelete = nil
     }
 
-    private func repeatCommute(_ last: Expense) {
-        let expense = Expense(title: last.title, amount: last.amount, category: .commute)
+    private func repeatExpense(_ last: Expense) {
+        let expense = Expense(title: last.title, amount: last.amount, category: last.category)
         do {
             try store.add(expense)
-            showToast("Logged \(expense.amount.formatted(.currency(code: currencyCode))) for Commute")
+            dismissedSuggestionKey = RepeatKey(last)
+            showToast("Logged \(expense.amount.formatted(.currency(code: currencyCode))) for \(expense.title)")
         } catch {
-            showToast("Couldn't log commute. Try again.")
+            showToast("Couldn't log that expense. Try again.")
         }
     }
 
@@ -266,41 +339,49 @@ struct ExpenseListView: View {
     }
 }
 
-private struct RepeatCommuteBar: View {
+private struct RepeatExpenseBar: View {
     let expense: Expense
     let currencyCode: String
     let action: () -> Void
+    let onDismiss: () -> Void
 
     var body: some View {
-        Button(action: action) {
-            HStack(spacing: 10) {
-                Image(systemName: ExpenseCategory.commute.systemImage)
-                    .foregroundStyle(.white)
-                    .frame(width: 28, height: 28)
-                    .background(ExpenseCategory.commute.color, in: Circle())
+        HStack(spacing: 10) {
+            Button(action: action) {
+                HStack(spacing: 14) {
+                    Image(systemName: expense.category.systemImage)
+                        .foregroundStyle(.white)
+                        .frame(width: 36, height: 36)
+                        .background(expense.category.color, in: Circle())
 
-                VStack(alignment: .leading, spacing: 0) {
-                    Text("Repeat Commute")
-                        .font(.subheadline.weight(.semibold))
-                    Text(expense.amount, format: .currency(code: currencyCode))
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("Repeat \(expense.title)")
+                            .font(.headline)
+                            .lineLimit(1)
+                        Text(expense.amount, format: .currency(code: currencyCode))
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+                    }
+
+                    Spacer()
                 }
-
-                Spacer()
-
-                Image(systemName: "plus.circle.fill")
-                    .font(.title3)
-                    .foregroundStyle(ExpenseCategory.commute.color)
             }
-            .padding(12)
-            .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
-            .padding(.horizontal)
-            .padding(.bottom, 4)
+            .buttonStyle(.plain)
+            .accessibilityLabel("Repeat \(expense.title), \(expense.amount.formatted(.currency(code: currencyCode)))")
+            .accessibilityHint("Adds a new \(expense.category.displayName.lowercased()) expense dated today")
+
+            Button(action: onDismiss) {
+                Image(systemName: "xmark.circle.fill")
+                    .font(.title3)
+                    .foregroundStyle(.secondary)
+            }
+            .buttonStyle(.plain)
+            .accessibilityLabel("Dismiss repeat expense suggestion")
         }
-        .buttonStyle(.plain)
-        .accessibilityLabel("Repeat commute, \(expense.amount.formatted(.currency(code: currencyCode)))")
-        .accessibilityHint("Adds a new commute expense dated today")
+        .padding(16)
+        .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 18, style: .continuous))
+        .padding(.horizontal)
+        .padding(.bottom, 4)
     }
 }
 

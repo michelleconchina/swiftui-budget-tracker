@@ -54,79 +54,85 @@ struct SummaryView: View {
 
     var body: some View {
         NavigationStack {
-            List {
-                Section {
-                    HStack {
-                        Button {
-                            changeMonth(by: -1)
-                        } label: {
-                            Image(systemName: "chevron.left")
-                        }
-                        .accessibilityLabel("Previous month")
-
-                        Spacer()
-
-                        Text(monthTitle)
-                            .font(.subheadline.weight(.semibold))
-
-                        Spacer()
-
-                        Button {
-                            changeMonth(by: 1)
-                        } label: {
-                            Image(systemName: "chevron.right")
-                        }
-                        .disabled(isCurrentMonth)
-                        .accessibilityLabel("Next month")
-                    }
-                    .buttonStyle(.plain)
-                    .foregroundStyle(.secondary)
-
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text(isCurrentMonth ? "This Month" : monthTitle)
-                            .font(.subheadline)
-                            .foregroundStyle(.secondary)
-                        Text(monthTotal, format: .currency(code: currencyCode))
-                            .font(.largeTitle.bold())
-                    }
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .padding(.vertical, 8)
-                }
-
-                if categoryTotals.isEmpty {
-                    Section {
-                        ContentUnavailableView(
-                            "No Expenses in \(monthTitle)",
-                            systemImage: "chart.pie",
-                            description: Text("Add an expense to see your breakdown.")
-                        )
-                    }
+            Group {
+                if store.isLoading {
+                    ProgressView()
                 } else {
-                    Section("By Category") {
-                        Chart(categoryTotals) { item in
-                            SectorMark(
-                                angle: .value("Amount", item.total),
-                                innerRadius: .ratio(0.6),
-                                angularInset: 1.5
-                            )
-                            .foregroundStyle(item.category.color)
-                            .cornerRadius(4)
-                        }
-                        .frame(height: 220)
-                        .padding(.vertical, 8)
-                        .accessibilityLabel("Spending by category for \(monthTitle)")
-                        .accessibilityValue(categoryTotals.map { "\($0.category.displayName): \($0.total.formatted(.currency(code: currencyCode)))" }.joined(separator: ", "))
-
-                        ForEach(categoryTotals) { item in
+                    List {
+                        Section {
                             HStack {
-                                Image(systemName: item.category.systemImage)
-                                    .foregroundStyle(.white)
-                                    .frame(width: 28, height: 28)
-                                    .background(item.category.color, in: Circle())
-                                Text(item.category.displayName)
+                                Button {
+                                    changeMonth(by: -1)
+                                } label: {
+                                    Image(systemName: "chevron.left")
+                                }
+                                .accessibilityLabel("Previous month")
+
                                 Spacer()
-                                Text(item.total, format: .currency(code: currencyCode))
+
+                                Text(monthTitle)
+                                    .font(.subheadline.weight(.semibold))
+
+                                Spacer()
+
+                                Button {
+                                    changeMonth(by: 1)
+                                } label: {
+                                    Image(systemName: "chevron.right")
+                                }
+                                .disabled(isCurrentMonth)
+                                .accessibilityLabel("Next month")
+                            }
+                            .buttonStyle(.plain)
+                            .foregroundStyle(.secondary)
+
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text(isCurrentMonth ? "This Month" : monthTitle)
+                                    .font(.subheadline)
                                     .foregroundStyle(.secondary)
+                                Text(monthTotal, format: .currency(code: currencyCode))
+                                    .font(.largeTitle.bold())
+                            }
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .padding(.vertical, 8)
+                        }
+
+                        if categoryTotals.isEmpty {
+                            Section {
+                                ContentUnavailableView(
+                                    "No Expenses in \(monthTitle)",
+                                    systemImage: "chart.pie",
+                                    description: Text("Add an expense to see your breakdown.")
+                                )
+                            }
+                        } else {
+                            Section("By Category") {
+                                Chart(categoryTotals) { item in
+                                    SectorMark(
+                                        angle: .value("Amount", item.total),
+                                        innerRadius: .ratio(0.6),
+                                        angularInset: 1.5
+                                    )
+                                    .foregroundStyle(item.category.color)
+                                    .cornerRadius(4)
+                                }
+                                .frame(height: 220)
+                                .padding(.vertical, 8)
+                                .accessibilityLabel("Spending by category for \(monthTitle)")
+                                .accessibilityValue(categoryTotals.map { "\($0.category.displayName): \($0.total.formatted(.currency(code: currencyCode)))" }.joined(separator: ", "))
+
+                                ForEach(categoryTotals) { item in
+                                    HStack {
+                                        Image(systemName: item.category.systemImage)
+                                            .foregroundStyle(.white)
+                                            .frame(width: 28, height: 28)
+                                            .background(item.category.color, in: Circle())
+                                        Text(item.category.displayName)
+                                        Spacer()
+                                        Text(item.total, format: .currency(code: currencyCode))
+                                            .foregroundStyle(.secondary)
+                                    }
+                                }
                             }
                         }
                     }
