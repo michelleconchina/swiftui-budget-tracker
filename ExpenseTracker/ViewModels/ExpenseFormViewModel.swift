@@ -21,9 +21,7 @@ final class ExpenseFormViewModel {
     var date: Date
     var note: String
 
-    private let editingExpenseID: String?
-
-    var isEditing: Bool { editingExpenseID != nil }
+    let isEditing: Bool
 
     private static let amountFormatter: NumberFormatter = {
         let formatter = NumberFormatter()
@@ -48,7 +46,7 @@ final class ExpenseFormViewModel {
     }
 
     init(editing expense: Expense? = nil) {
-        self.editingExpenseID = expense?.id
+        self.isEditing = expense != nil
         self.title = expense?.title ?? ""
         self.amountText = expense.flatMap { Self.amountFormatter.string(from: $0.amount as NSNumber) } ?? ""
         self.category = expense?.category ?? .other
