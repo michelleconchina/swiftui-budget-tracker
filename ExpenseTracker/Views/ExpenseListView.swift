@@ -172,6 +172,13 @@ struct ExpenseListView: View {
                                         }
 
                                         Button {
+                                            duplicateExpense(expense)
+                                        } label: {
+                                            Label("Duplicate", systemImage: "plus.square.on.square")
+                                        }
+                                        .tint(.indigo)
+
+                                        Button {
                                             expenseToEdit = expense
                                         } label: {
                                             Label("Edit", systemImage: "pencil")
@@ -323,6 +330,22 @@ struct ExpenseListView: View {
             showToast("Logged \(expense.amount.formatted(.currency(code: currencyCode))) for \(expense.title)")
         } catch {
             showToast("Couldn't log that expense. Try again.")
+        }
+    }
+
+    private func duplicateExpense(_ original: Expense) {
+        let copy = Expense(
+            title: original.title,
+            amount: original.amount,
+            category: original.category,
+            date: original.date,
+            note: original.note
+        )
+        do {
+            try store.add(copy)
+            showToast("Duplicated \"\(copy.title)\"")
+        } catch {
+            showToast("Couldn't duplicate that expense. Try again.")
         }
     }
 

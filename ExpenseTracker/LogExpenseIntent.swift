@@ -33,6 +33,48 @@ struct LogExpenseIntent: AppIntent {
     }
 }
 
+/// Logs an expense from the text of a card purchase alert (e.g. a bank SMS),
+/// so a Shortcuts "Message" automation can pass incoming alerts straight in.
+struct LogExpenseFromMessageIntent: AppIntent {
+    static var title: LocalizedStringResource = "Log Expense from Message"
+    static var description = IntentDescription("Reads a card purchase alert and logs it as an expense. Messages that aren't purchases are skipped.")
+
+    @Parameter(title: "Message")
+    var message: String
+
+    @Parameter(title: "Category", default: .other)
+    var category: ExpenseCategory
+
+    static var parameterSummary: some ParameterSummary {
+        Summary("Log expense from \(\.$message)") {
+            \.$category
+        }
+    }
+
+    func perform() async throws -> some IntentResult & ProvidesDialog {
+        guard let purchase = TransactionMessageParser.parse(message) else {
+            return .result(dialog: "Not a purchase alert. Nothing logged.")
+        }
+
+        if FirebaseApp.app() == nil {
+            FirebaseApp.configure()
+        }
+
+        let title = purchase.merchant ?? category.displayName
+        let expense = Expense(
+            title: title,
+            amount: purchase.amount,
+            category: category,
+            note: message.trimmingCharacters(in: .whitespacesAndNewlines)
+        )
+
+        let store = ExpenseStore()
+        try store.add(expense)
+
+        return .result(dialog: "Logged ₱\(purchase.amount.formatted()) for \(title).")
+    }
+}
+
 struct ExpenseTrackerShortcuts: AppShortcutsProvider {
     static var appShortcuts: [AppShortcut] {
         AppShortcut(
@@ -43,6 +85,14 @@ struct ExpenseTrackerShortcuts: AppShortcutsProvider {
             ],
             shortTitle: "Log Expense",
             systemImageName: "plus.circle"
+        )
+        AppShortcut(
+            intent: LogExpenseFromMessageIntent(),
+            phrases: [
+                "Log an expense from a message in \(.applicationName)"
+            ],
+            shortTitle: "Log from Message",
+            systemImageName: "message"
         )
     }
 }
