@@ -12,6 +12,19 @@ final class TransactionMessageParserTests: XCTestCase {
         )
     }
 
+    func test_parse_readsRCBCPurchaseAlert() {
+        let message = "Your transaction at UNIQLO SM MARILAO      BU on 11/17 11:45AM for PHP1582.00 using your Card ending in xxxx1234 is approved. If you don't recognize this transaction, call 0288881883 immediately. You can also lock your Card using the RCBC Pulz app to prevent unauthorized transactions."
+
+        XCTAssertEqual(
+            TransactionMessageParser.parse(message),
+            ParsedPurchase(amount: 1582, merchant: "UNIQLO SM MARILAO BU")
+        )
+    }
+
+    func test_parse_ignoresRCBCPaymentPosted() {
+        XCTAssertNil(TransactionMessageParser.parse("Payment of Php22,277.36 made to Card end 1234 was posted on 11/16."))
+    }
+
     func test_parse_acceptsPesoSignAndShortPrefix() {
         XCTAssertEqual(TransactionMessageParser.parse("Purchase of ₱89.50 at 7-ELEVEN")?.amount, 89.5)
         XCTAssertEqual(TransactionMessageParser.parse("Purchase of P 2,000 at SM STORE.")?.amount, 2000)

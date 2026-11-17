@@ -12,7 +12,7 @@ struct ParsedPurchase: Equatable {
 enum TransactionMessageParser {
     private static let ignoredPhrases = [
         "otp", "one-time", "one time pin", "one time password",
-        "declined", "reversal", "refund", "payment received", "payment posted",
+        "declined", "reversal", "refund", "payment of", "payment received", "payment posted",
         "credited", "do not share"
     ]
 
@@ -40,7 +40,8 @@ enum TransactionMessageParser {
         }
 
         let merchant = firstCapture(of: merchantPattern, in: text)
-            .map { $0.trimmingCharacters(in: .whitespaces) }
+            // Merchant names are padded with runs of spaces, e.g. "UNIQLO SM MARILAO      BU".
+            .map { $0.split(whereSeparator: \.isWhitespace).joined(separator: " ") }
             .flatMap { $0.isEmpty ? nil : String($0.prefix(60)) }
 
         return ParsedPurchase(amount: amount, merchant: merchant)
