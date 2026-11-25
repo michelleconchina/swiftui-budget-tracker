@@ -48,4 +48,24 @@ final class TransactionMessageParserTests: XCTestCase {
     func test_parse_doesNotTreatWordsEndingInPAsCurrency() {
         XCTAssertNil(TransactionMessageParser.parse("Visit our shop 24/7 for deals"))
     }
+
+    func test_parse_doesNotIgnorePurchasesThatMentionRewardsCredited() {
+        XCTAssertEqual(
+            TransactionMessageParser.parse(
+                "You earned 15 points credited to your account for this purchase of PHP 1,500.00 at SM SUPERMARKET on 11/20/26."
+            ),
+            ParsedPurchase(amount: 1500, merchant: "SM SUPERMARKET")
+        )
+        XCTAssertEqual(
+            TransactionMessageParser.parse(
+                "Cashback of PHP 20.00 will be credited after your purchase of PHP 1,000.00 at PUREGOLD on 11/20/26."
+            ),
+            ParsedPurchase(amount: 1000, merchant: "PUREGOLD")
+        )
+    }
+
+    func test_parse_stillIgnoresAccountLevelCredits() {
+        XCTAssertNil(TransactionMessageParser.parse("Payment received: PHP 5,000.00. Thank you!"))
+        XCTAssertNil(TransactionMessageParser.parse("Payment of Php22,277.36 made to Card end 1234 was posted on 11/16."))
+    }
 }
