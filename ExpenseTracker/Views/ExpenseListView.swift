@@ -162,6 +162,9 @@ struct ExpenseListView: View {
                                         expenseToEdit = expense
                                     } label: {
                                         ExpenseRowView(expense: expense, currencyCode: currencyCode, pesoAmount: store.pesoEquivalent(of: expense.amount))
+                                            // A plain button only hit-tests its drawn content;
+                                            // make the whole row, including the gap, tappable.
+                                            .contentShape(Rectangle())
                                     }
                                     .buttonStyle(.plain)
                                     .swipeActions(edge: .trailing) {
