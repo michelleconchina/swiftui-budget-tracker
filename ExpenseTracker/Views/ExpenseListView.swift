@@ -191,7 +191,7 @@ struct ExpenseListView: View {
                                 }
                             } header: {
                                 HStack {
-                                    Text(group.day, format: .dateTime.weekday(.wide).month().day().year())
+                                    Text(group.day, format: .dateTime.weekday(.abbreviated).month(.abbreviated).day().year())
                                     Spacer()
                                     Text(store.total(of: group.expenses), format: .currency(code: currencyCode))
                                 }
