@@ -32,7 +32,7 @@ struct ExpenseRowView: View {
                         .font(.caption)
                         .foregroundStyle(.secondary)
                 } else {
-                    Text(expense.date.formatted(date: .abbreviated, time: .omitted))
+                    Text(expense.date, format: .dateTime.weekday(.abbreviated).month(.abbreviated).day().year())
                         .font(.caption)
                         .foregroundStyle(.secondary)
                 }
