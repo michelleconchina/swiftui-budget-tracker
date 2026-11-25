@@ -51,6 +51,9 @@ struct AddEditExpenseView: View {
                             .focused($focusedField, equals: .amount)
                             .fieldErrorStyle(isInvalid: formError == .invalidAmount)
                     }
+                    // Tapping the icon or empty space in the row should focus the field too.
+                    .contentShape(Rectangle())
+                    .onTapGesture { focusedField = .amount }
 
                     HStack(spacing: 12) {
                         Image(systemName: "text.alignleft")
@@ -60,6 +63,8 @@ struct AddEditExpenseView: View {
                             .focused($focusedField, equals: .title)
                             .fieldErrorStyle(isInvalid: formError == .emptyTitle)
                     }
+                    .contentShape(Rectangle())
+                    .onTapGesture { focusedField = .title }
 
                     VStack(alignment: .leading, spacing: 8) {
                         Text("Category")
