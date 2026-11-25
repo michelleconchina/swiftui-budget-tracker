@@ -98,7 +98,7 @@ struct ExpenseListView: View {
     }
 
     private var currencyCode: String {
-        AppCurrency.code
+        store.currencyCode
     }
 
     private static let csvDateFormatter: DateFormatter = {
@@ -161,7 +161,7 @@ struct ExpenseListView: View {
                                     Button {
                                         expenseToEdit = expense
                                     } label: {
-                                        ExpenseRowView(expense: expense)
+                                        ExpenseRowView(expense: expense, currencyCode: currencyCode)
                                     }
                                     .buttonStyle(.plain)
                                     .swipeActions(edge: .trailing) {
@@ -197,7 +197,7 @@ struct ExpenseListView: View {
                     }
                 }
             }
-            .navigationTitle("Expenses")
+            .navigationTitle(store.ledger == .main ? "Expenses" : store.ledger.displayName)
             .searchable(text: $searchText, prompt: "Search expenses")
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
@@ -227,6 +227,20 @@ struct ExpenseListView: View {
                         Image(systemName: selectedCategory == nil ? "line.3.horizontal.decrease.circle" : "line.3.horizontal.decrease.circle.fill")
                     }
                     .accessibilityLabel(selectedCategory == nil ? "Filter by category" : "Filtering by \(selectedCategory!.displayName)")
+                }
+                ToolbarItem(placement: .topBarLeading) {
+                    @Bindable var store = store
+                    Menu {
+                        Picker("Log", selection: $store.ledger) {
+                            ForEach(Ledger.allCases) { ledger in
+                                Label("\(ledger.displayName) (\(ledger.currencyCode))", systemImage: ledger.systemImage)
+                                    .tag(ledger)
+                            }
+                        }
+                    } label: {
+                        Image(systemName: store.ledger.systemImage)
+                    }
+                    .accessibilityLabel("Switch log, currently \(store.ledger.displayName)")
                 }
                 ToolbarItem(placement: .topBarTrailing) {
                     if let csvExportURL {

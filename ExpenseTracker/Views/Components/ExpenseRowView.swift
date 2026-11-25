@@ -2,9 +2,10 @@ import SwiftUI
 
 struct ExpenseRowView: View {
     let expense: Expense
+    var currencyCode: String = AppCurrency.code
 
     private var formattedAmount: String {
-        expense.amount.formatted(.currency(code: AppCurrency.code))
+        expense.amount.formatted(.currency(code: currencyCode))
     }
 
     var body: some View {
