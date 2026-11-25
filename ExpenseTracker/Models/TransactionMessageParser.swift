@@ -10,12 +10,8 @@ struct ParsedPurchase: Equatable {
 /// e.g. "...charged PHP 1,250.00 at JOLLIBEE MAKATI on 11/16/26...".
 /// Returns nil for messages that aren't purchases (OTPs, payments, declines).
 enum TransactionMessageParser {
-    // Note: "credited" is deliberately not in this list. Many genuine purchase
-    // alerts mention rewards points or cashback being "credited" alongside the
-    // purchase itself (e.g. "Earn points credited for this purchase of
-    // PHP 1,500.00 at SM SUPERMARKET..."), which would otherwise be wrongly
-    // discarded. Account-level credits are still caught by the more specific
-    // "payment received"/"payment posted" phrases below.
+    // "credited" is handled separately in parse(): purchase alerts often mention
+    // points or cashback being credited, but so do cash-ins and transfers.
     private static let ignoredPhrases = [
         "otp", "one-time", "one time pin", "one time password",
         "declined", "reversal", "refund", "payment of", "payment received", "payment posted",
@@ -44,6 +40,11 @@ enum TransactionMessageParser {
         guard !amountMatches.isEmpty else { return nil }
 
         let merchantMatch = merchantPattern.firstMatch(in: text, range: fullRange)
+
+        // "credited" alone means money in (cash-in, transfer). Only a merchant
+        // mention ("...purchase of PHP 1,500.00 at SM...") marks it as a purchase
+        // that just mentions points or cashback being credited.
+        if merchantMatch == nil, lowercased.contains("credited") { return nil }
 
         // A message can mention more than one peso amount (e.g. a cashback or
         // rewards figure alongside the purchase itself), so prefer whichever

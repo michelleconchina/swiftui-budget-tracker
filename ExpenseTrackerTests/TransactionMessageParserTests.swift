@@ -68,4 +68,10 @@ final class TransactionMessageParserTests: XCTestCase {
         XCTAssertNil(TransactionMessageParser.parse("Payment received: PHP 5,000.00. Thank you!"))
         XCTAssertNil(TransactionMessageParser.parse("Payment of Php22,277.36 made to Card end 1234 was posted on 11/16."))
     }
+
+    func test_parse_ignoresMoneyInCredits() {
+        XCTAssertNil(TransactionMessageParser.parse("Your GCash account has been credited with PHP 1,000.00 from JUAN DELA CRUZ."))
+        XCTAssertNil(TransactionMessageParser.parse("PHP 5,000.00 has been credited to your account ending 1234 via InstaPay."))
+        XCTAssertNil(TransactionMessageParser.parse("Cash-in of PHP 500.00 has been credited to your Maya wallet."))
+    }
 }
