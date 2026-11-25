@@ -68,6 +68,13 @@ final class ExpenseStore {
         ledger.currencyCode == AppCurrency.code ? nil : amount * thbToPhpRate
     }
 
+    /// "≈ ₱1,234" for amounts in a non-peso log, or nil in the peso log.
+    func pesoLabel(for amount: Double) -> String? {
+        pesoEquivalent(of: amount).map {
+            "≈ " + $0.formatted(.currency(code: AppCurrency.code).precision(.fractionLength(0)))
+        }
+    }
+
     /// Fetches the latest THB→PHP rate; keeps the saved one on any failure.
     func refreshConversionRate() async {
         struct Response: Decodable { let rates: [String: Double] }

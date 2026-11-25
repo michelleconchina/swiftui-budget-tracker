@@ -40,9 +40,12 @@ struct SummaryView: View {
     private var currencyCode: String { store.currencyCode }
 
     private var summaryText: String {
-        var lines = ["\(monthTitle) Expense Summary", "Total: \(monthTotal.formatted(.currency(code: currencyCode)))", ""]
+        func money(_ amount: Double) -> String {
+            amount.formatted(.currency(code: currencyCode)) + (store.pesoLabel(for: amount).map { " (\($0))" } ?? "")
+        }
+        var lines = ["\(monthTitle) Expense Summary", "Total: \(money(monthTotal))", ""]
         for item in categoryTotals {
-            lines.append("\(item.category.displayName): \(item.total.formatted(.currency(code: currencyCode)))")
+            lines.append("\(item.category.displayName): \(money(item.total))")
         }
         return lines.joined(separator: "\n")
     }
@@ -92,6 +95,11 @@ struct SummaryView: View {
                                     .foregroundStyle(.secondary)
                                 Text(monthTotal, format: .currency(code: currencyCode))
                                     .font(.largeTitle.bold())
+                                if let peso = store.pesoLabel(for: monthTotal) {
+                                    Text(peso)
+                                        .font(.title3.monospacedDigit())
+                                        .foregroundStyle(.secondary)
+                                }
                             }
                             .frame(maxWidth: .infinity, alignment: .leading)
                             .padding(.vertical, 8)
@@ -129,8 +137,15 @@ struct SummaryView: View {
                                             .background(item.category.color, in: Circle())
                                         Text(item.category.displayName)
                                         Spacer()
-                                        Text(item.total, format: .currency(code: currencyCode))
-                                            .foregroundStyle(.secondary)
+                                        VStack(alignment: .trailing, spacing: 2) {
+                                            Text(item.total, format: .currency(code: currencyCode))
+                                                .foregroundStyle(.secondary)
+                                            if let peso = store.pesoLabel(for: item.total) {
+                                                Text(peso)
+                                                    .font(.caption.monospacedDigit())
+                                                    .foregroundStyle(.tertiary)
+                                            }
+                                        }
                                     }
                                 }
                             }

@@ -152,8 +152,8 @@ struct ExpenseListView: View {
                                     Text("Today: \(todayTotal, format: .currency(code: currencyCode))")
                                         .font(.headline)
                                         .foregroundStyle(.green)
-                                    if let peso = store.pesoEquivalent(of: todayTotal) {
-                                        Text("≈ \(peso, format: .currency(code: AppCurrency.code).precision(.fractionLength(0)))")
+                                    if let peso = store.pesoLabel(for: todayTotal) {
+                                        Text(peso)
                                             .font(.subheadline.monospacedDigit())
                                             .foregroundStyle(.secondary)
                                     }
@@ -201,6 +201,11 @@ struct ExpenseListView: View {
                                     Text(group.day, format: .dateTime.weekday(.wide).month().day().year())
                                     Spacer()
                                     Text(store.total(of: group.expenses), format: .currency(code: currencyCode))
+                                    if let peso = store.pesoLabel(for: store.total(of: group.expenses)) {
+                                        Text(peso)
+                                            .monospacedDigit()
+                                            .foregroundStyle(.tertiary)
+                                    }
                                 }
                             }
                         }
@@ -288,6 +293,7 @@ struct ExpenseListView: View {
                 RepeatExpenseBar(
                     expense: suggestedRepeatExpense,
                     currencyCode: currencyCode,
+                    pesoLabel: store.pesoLabel(for: suggestedRepeatExpense.amount),
                     action: { repeatExpense(suggestedRepeatExpense) },
                     onDismiss: { dismissedSuggestionKey = RepeatKey(suggestedRepeatExpense) }
                 )
@@ -351,7 +357,8 @@ struct ExpenseListView: View {
         do {
             try store.add(expense)
             dismissedSuggestionKey = RepeatKey(last)
-            showToast("Logged \(expense.amount.formatted(.currency(code: currencyCode))) for \(expense.title)")
+            let peso = store.pesoLabel(for: expense.amount).map { " (\($0))" } ?? ""
+            showToast("Logged \(expense.amount.formatted(.currency(code: currencyCode)))\(peso) for \(expense.title)")
         } catch {
             showToast("Couldn't log that expense. Try again.")
         }
@@ -389,6 +396,7 @@ struct ExpenseListView: View {
 private struct RepeatExpenseBar: View {
     let expense: Expense
     let currencyCode: String
+    var pesoLabel: String? = nil
     let action: () -> Void
     let onDismiss: () -> Void
 
@@ -405,7 +413,7 @@ private struct RepeatExpenseBar: View {
                         Text("Repeat \(expense.title)")
                             .font(.headline)
                             .lineLimit(1)
-                        Text(expense.amount, format: .currency(code: currencyCode))
+                        Text("\(expense.amount.formatted(.currency(code: currencyCode)))\(pesoLabel.map { "  \($0)" } ?? "")")
                             .font(.subheadline)
                             .foregroundStyle(.secondary)
                     }
