@@ -26,7 +26,7 @@ struct LogExpenseIntent: AppIntent {
         let title = expenseTitle.isEmpty ? category.displayName : expenseTitle
         let expense = Expense(title: title, amount: amount, category: category)
 
-        let store = ExpenseStore()
+        let store = ExpenseStore(ledger: .main)
         try store.add(expense)
 
         return .result(dialog: "Logged ₱\(amount.formatted()) for \(category.displayName).")
@@ -68,7 +68,7 @@ struct LogExpenseFromMessageIntent: AppIntent {
             note: message.trimmingCharacters(in: .whitespacesAndNewlines)
         )
 
-        let store = ExpenseStore()
+        let store = ExpenseStore(ledger: .main)
         try store.add(expense)
 
         return .result(dialog: "Logged ₱\(purchase.amount.formatted()) for \(title).")

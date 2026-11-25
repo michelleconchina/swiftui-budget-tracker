@@ -37,7 +37,7 @@ struct SummaryView: View {
             .sorted { $0.total > $1.total }
     }
 
-    private var currencyCode: String { AppCurrency.code }
+    private var currencyCode: String { store.currencyCode }
 
     private var summaryText: String {
         var lines = ["\(monthTitle) Expense Summary", "Total: \(monthTotal.formatted(.currency(code: currencyCode)))", ""]
@@ -138,7 +138,7 @@ struct SummaryView: View {
                     }
                 }
             }
-            .navigationTitle("Summary")
+            .navigationTitle(store.ledger == .main ? "Summary" : "\(store.ledger.displayName) Summary")
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     ShareLink(item: summaryText) {
