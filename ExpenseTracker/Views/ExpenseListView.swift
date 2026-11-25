@@ -148,10 +148,17 @@ struct ExpenseListView: View {
                                     .foregroundStyle(.secondary)
                                     .textCase(nil)
                             } else {
-                                Text("Today: \(todayTotal, format: .currency(code: currencyCode))")
-                                    .font(.headline)
-                                    .foregroundStyle(.green)
-                                    .textCase(nil)
+                                HStack(alignment: .firstTextBaseline, spacing: 6) {
+                                    Text("Today: \(todayTotal, format: .currency(code: currencyCode))")
+                                        .font(.headline)
+                                        .foregroundStyle(.green)
+                                    if let peso = store.pesoEquivalent(of: todayTotal) {
+                                        Text("≈ \(peso, format: .currency(code: AppCurrency.code).precision(.fractionLength(0)))")
+                                            .font(.subheadline.monospacedDigit())
+                                            .foregroundStyle(.secondary)
+                                    }
+                                }
+                                .textCase(nil)
                             }
                         }
 
