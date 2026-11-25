@@ -23,6 +23,7 @@ struct ExpenseTrackerApp: App {
             }
             .environment(store)
             .onAppear { store.start() }
+            .task { await store.refreshConversionRate() }
         }
     }
 }

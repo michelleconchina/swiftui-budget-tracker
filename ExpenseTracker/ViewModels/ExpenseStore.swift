@@ -54,6 +54,33 @@ final class ExpenseStore {
 
     var currencyCode: String { ledger.currencyCode }
 
+    // MARK: Peso conversion for the trip log
+
+    private static let rateKey = "thbToPhpRate"
+
+    /// PHP per 1 THB. Starts from the last fetched rate (or a recent default)
+    /// so conversions still show when offline abroad.
+    private(set) var thbToPhpRate: Double =
+        UserDefaults.standard.object(forKey: rateKey) as? Double ?? 1.88
+
+    /// The amount in pesos, or nil when this log is already in pesos.
+    func pesoEquivalent(of amount: Double) -> Double? {
+        ledger.currencyCode == AppCurrency.code ? nil : amount * thbToPhpRate
+    }
+
+    /// Fetches the latest THB→PHP rate; keeps the saved one on any failure.
+    func refreshConversionRate() async {
+        struct Response: Decodable { let rates: [String: Double] }
+        guard let url = URL(string: "https://open.er-api.com/v6/latest/THB"),
+              let (data, _) = try? await URLSession.shared.data(from: url),
+              let rate = (try? JSONDecoder().decode(Response.self, from: data))?.rates[AppCurrency.code],
+              rate > 0 else { return }
+        await MainActor.run {
+            thbToPhpRate = rate
+            UserDefaults.standard.set(rate, forKey: Self.rateKey)
+        }
+    }
+
     /// Pass a ledger to pin it (e.g. intents always log to `.main`);
     /// otherwise the last ledger picked in the app is used.
     init(ledger: Ledger? = nil) {

@@ -161,7 +161,7 @@ struct ExpenseListView: View {
                                     Button {
                                         expenseToEdit = expense
                                     } label: {
-                                        ExpenseRowView(expense: expense, currencyCode: currencyCode)
+                                        ExpenseRowView(expense: expense, currencyCode: currencyCode, pesoAmount: store.pesoEquivalent(of: expense.amount))
                                     }
                                     .buttonStyle(.plain)
                                     .swipeActions(edge: .trailing) {
