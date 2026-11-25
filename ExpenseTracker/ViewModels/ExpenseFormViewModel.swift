@@ -55,12 +55,12 @@ final class ExpenseFormViewModel {
     }
 
     func validate() throws -> (title: String, amount: Double, category: ExpenseCategory, date: Date, note: String?) {
+        guard let amount = Self.parseAmount(amountText), amount > 0 else {
+            throw ExpenseFormError.invalidAmount
+        }
         let trimmedTitle = title.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmedTitle.isEmpty else {
             throw ExpenseFormError.emptyTitle
-        }
-        guard let amount = Self.parseAmount(amountText), amount > 0 else {
-            throw ExpenseFormError.invalidAmount
         }
         let trimmedNote = note.trimmingCharacters(in: .whitespacesAndNewlines)
         return (trimmedTitle, amount, category, date, trimmedNote.isEmpty ? nil : trimmedNote)

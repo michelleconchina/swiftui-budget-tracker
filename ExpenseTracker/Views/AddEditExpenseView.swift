@@ -43,15 +43,6 @@ struct AddEditExpenseView: View {
 
                 Section("Details") {
                     HStack(spacing: 12) {
-                        Image(systemName: "text.alignleft")
-                            .foregroundStyle(.secondary)
-                            .frame(width: 20)
-                        TextField("Title", text: $formViewModel.title)
-                            .focused($focusedField, equals: .title)
-                            .fieldErrorStyle(isInvalid: formError == .emptyTitle)
-                    }
-
-                    HStack(spacing: 12) {
                         Image(systemName: "banknote")
                             .foregroundStyle(.secondary)
                             .frame(width: 20)
@@ -59,6 +50,15 @@ struct AddEditExpenseView: View {
                             .keyboardType(.decimalPad)
                             .focused($focusedField, equals: .amount)
                             .fieldErrorStyle(isInvalid: formError == .invalidAmount)
+                    }
+
+                    HStack(spacing: 12) {
+                        Image(systemName: "text.alignleft")
+                            .foregroundStyle(.secondary)
+                            .frame(width: 20)
+                        TextField("Title", text: $formViewModel.title)
+                            .focused($focusedField, equals: .title)
+                            .fieldErrorStyle(isInvalid: formError == .emptyTitle)
                     }
 
                     VStack(alignment: .leading, spacing: 8) {
